@@ -1,7 +1,7 @@
 
 # 0) Stack & Principles
 
-Angular 19 with Tailwind 3.4.18
+Angular 20 + Tailwind v4+ flowbite
 
 # 1) Light Theme & Color Palette (tokens)
 
@@ -23,7 +23,7 @@ Angular 19 with Tailwind 3.4.18
 # 3) Routes (ordered map)
 
 
-* **Guards:** `JwtAuthGuard` (valid token), `RolesGuard` (path by role) (sidebar items by role in left panel):
+* **Guards:** `JwtAuthGuard` (valid token), `RolesGuard` (path by role) (sidebar view items by role in left panel):
 
   * **user:** home, services, payments, medical-card, profile
   * **medical:** home, encounters, appointments, services, payments, patients-served, profile

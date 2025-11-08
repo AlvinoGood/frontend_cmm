@@ -1,0 +1,13 @@
+.entering {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.entered {
+  opacity: 1;
+  transform: translateY(0);
+}
+.leaving {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+

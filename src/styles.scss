@@ -3,3 +3,31 @@
 
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
+
+$color-background: #ffffff;
+$color-surface: #f9fafb;
+$color-border: #e5e7eb;
+$color-primary: #8d0c28;
+$color-on-primary: #ffffff;
+$color-accent: #f4c151;
+$color-success: #8d0c28;
+$color-success-soft: #8d0c2833;
+$color-warning: #f4c151;
+$color-on-warning: #1f2937;
+$color-danger: #8d0c28;
+$color-info: #e5e7eb;
+
+@theme {
+  --color-background: #{$color-background};
+  --color-surface: #{$color-surface};
+  --color-border: #{$color-border};
+  --color-primary: #{$color-primary};
+  --color-on-primary: #{$color-on-primary};
+  --color-accent: #{$color-accent};
+  --color-success: #{$color-success};
+  --color-success-soft: #{$color-success-soft};
+  --color-warning: #{$color-warning};
+  --color-on-warning: #{$color-on-warning};
+  --color-danger: #{$color-danger};
+  --color-info: #{$color-info};
+}

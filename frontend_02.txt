@@ -3,17 +3,17 @@
 * **Login (DNI + password):** store JWT + decode `sys_role`, `medical_role`. Token of 5 minutes.
 * **Register:** DNI, email, password → default role `user`.
 * **Forgot/Reset:** send reset token/link to the user’s email (email token flow; clean pastel screens, friendly messages).
-* **Expired token:** refresh token.
+* **Expired token:** refresh token. (logic of authentication)
 
 ---
 
-## Sidebar by Role (short)
+## Sidebar items view by Role (short)
 
 * **User:** Home, Services, Payments, Medical Card, Profile.
 * **Medical:** Home, Encounters, Appointments, Services, Payments, Patients Served, Profile.
 * **Admin:** Home, Encounters, Appointments, Services, Payments, Users, Templates, Profile.
 
----
+--- 
 
 ## 👤 **User (paciente)**
 
