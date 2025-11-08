@@ -22,28 +22,8 @@ Angular 19 with Tailwind 3.4.18
 
 # 3) Routes (ordered map)
 
-```
 
-/auth
-/login
-/register
-/forgot-password
-/reset-password
-/app (protected)
-/home
-/services
-/payments
-/medical-card
-/profile
-/encounters
-/appointments
-/patients-served
-/users
-/templates
-
-```
-
-* **Guards:** `JwtAuthGuard` (valid token), `RolesGuard` (path by role):
+* **Guards:** `JwtAuthGuard` (valid token), `RolesGuard` (path by role) (sidebar items by role in left panel):
 
   * **user:** home, services, payments, medical-card, profile
   * **medical:** home, encounters, appointments, services, payments, patients-served, profile
@@ -51,10 +31,10 @@ Angular 19 with Tailwind 3.4.18
 
 # 4) Auth UX (login/register)
 
-* **Login (DNI + password):** store JWT + decode `sys_role`, `medical_role`. Remember me.
+* **Login (DNI + password):** store JWT + decode `sys_role`, `medical_role`. Token of 5 minutes.
 * **Register:** DNI, email, password → default role `user`.
 * **Forgot/Reset:** email token flow (clean pastel screens, friendly messages).
-* **Expired token:** optional refresh or redirect to login.
+* **Expired token:** refresh token.
 
 # 5) Sidebar by Role (short)
 
@@ -128,25 +108,6 @@ Angular 19 with Tailwind 3.4.18
 * Strong contrast despite pastels (dark text on light).
 * Visible focus, `aria-labels` on icons, keyboard navigation.
 * Ready for i18n (centralized strings).
-
-# 12) Clean Folder Structure
-
-```
-
-src/
-app/ (routing, guards, providers)
-components/ (ui + domain)
-features/
-auth/
-user/
-medical/
-admin/
-hooks/
-api/
-store/
-styles/
-
-```
 
 # 13) Development Flow (in order)
 

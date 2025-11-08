@@ -1,0 +1,305 @@
+## **Interfaces al ingresar a la aplicacion web**
+
+* **Login (DNI + password):** store JWT + decode `sys_role`, `medical_role`. Token of 5 minutes.
+* **Register:** DNI, email, password → default role `user`.
+* **Forgot/Reset:** send reset token/link to the user’s email (email token flow; clean pastel screens, friendly messages).
+* **Expired token:** refresh token.
+
+---
+
+## Sidebar by Role (short)
+
+* **User:** Home, Services, Payments, Medical Card, Profile.
+* **Medical:** Home, Encounters, Appointments, Services, Payments, Patients Served, Profile.
+* **Admin:** Home, Encounters, Appointments, Services, Payments, Users, Templates, Profile.
+
+---
+
+## 👤 **User (paciente)**
+
+* **Inicio** → Dashboard simple que pueda ver los PDFs de sus citas atentidas y con la posibilidad de descargar, visualizar.(solo puede ver y descargar)
+* **Servicios** → Catálogo de servicios, una tabla de los servicios existentes, con boton para elegir solo 1 y redirigir inmediatamente a nueva interfaz de "Generar ticket" donde debera confirmar o regresar. 
+* **Pagos** → Lista de sus tickets con los estados (pending, paid, expired). (solo puede ver)
+* **Tarjeta de sanidad** → con botones de Solicitar/ver su tarjeta de sanidad (certificado). Si boton es "Solicitar" debe generar nueva interfaz de formulario para que rellene sus datos (tabla "medical_card") y envie. Caso contrario el boton es "Ver tarjeta de sanidad" entonces se debe mostrar su tarjeta actual (si no tiene, entonces debe mostrar un mensaje con usted aun no cuenta con tarjeta de sanida) y sus tarjetas anteriores. (puede agregar y  ver)
+* **Perfil** → Sus datos personales (DNI, email)(solo puede ver).
+
+---
+
+## 🩺 **Medical (médico/enfermero/psicólogo/etc.)**
+
+* **Inicio** → Dashboard con resumen Cant. de pacientes atentidos en total, Atenciones durante el mes y los 2 ultimos PDF's recientes generados por el mismo. (esto segun su rol de medico) (solo puede ver)
+* **Atenciones** → con boton de "Generar", si el boton es "Generar" entonces se debe redirigir a la interfaz de formulario respecto al medico (correspondiente a la tablas "form_dentist", "form_meobps") para que rellene los datos y envie. (Puede agregar, y ver), Como ultimo paso antes de enviar darle un resumen para confirmar datos correctos y enviar.
+* **Citas** → esta seccion debe tener un "search" para que medico ingrese el DNI del paciente del cual quiere extraer sus informacion, para ellos contara con botones para ver su PDF del paciente buscado. (puede ver incluso si fue otra especialidad quien la atendio), solo puede ver. (puede ver y tener opcion para descargar dicho PDF)
+* **Servicios** → Ver qué servicios están disponibles para su especialidad. (mostrar en una tabla, solo puede ver)
+* **Pagos** → Estado de tickets relacionados al servicios del paciente, para ello contara con un "search"  (solo ver)(la interfaz debe mostrar un search para buscar por el DNI del paciente.
+* **Atendidos** → Acceso rápido a **sus pacientes atendidos por el doctor** (mostrar una interfaz con tablas de 10 en 10, solo puede ver).
+* **Perfil** → Sus datos personales y rol (email, rol, especialidad)(solo puede ver).
+
+---
+
+## 🛠️ **Admin**
+
+* **Inicio** → Dashboard con cant de usuarios, cant de citas atendidas, cant de tickets y cant de servicios brindados.
+* **Atenciones** → Puede revisar cualquier encuentro. (interfaz de solo vista con un "search" que se debe ingresar el DNI para buscar cualquier paciente)
+* **Citas** → Acceso a todos las citas clínicas atendidas (interfaz con tabla de las citas atendidas, de 10 en 10 y con un search para optimizar la busqueda)
+* **Servicios** → Crear, editar o eliminar servicios.
+* **Pagos** → Ver y auditar todos los tickets. (interfaz con tabla de 10 en 10)
+* **Usuarios** → Gestionar cuentas (crear, promover a médico, asignar especialidad, editar, eliminar).
+* **Templates** → poder Agregar nuevas plantillas médicas `medical_template`, Especialidades (`medical_roles`)
+* **Perfil** → Sus datos personales.
+
+---
+
+Consideraciones
+- Listas paginadas (10)
+- Los searchs o barras de busqueda, se debe ingresar el DNI. 
+- El backend, API's, etc. sera en ingles, mientras que el frontend en la interfaz sera en español.
+- la api que se consumira sera con el nombre de "/medical-center/v1"
+
+---
+
+Folders Structure for frontend:
+
+src/
+└─ app/
+│   ├─ core/                         # App-wide singletons & cross-cutting code
+│   │  ├─ services/                  # Global API/auth/session services used across the app
+│   │  ├─ models/                    # Global interfaces & class models (DTOs / ViewModels)
+│   │  ├─ constants/                 # App constants (routes, limits, roles, feature flags)
+│   │  ├─ enums/                     # Global TypeScript enums
+│   │  ├─ helpers/                   # Pure utility/helper functions (dates, formatters)
+│   │  ├─ guards/                    # Auth/role guards for route protection
+│   │  ├─ interceptors/              # HTTP interceptors (auth, error, base URL)
+│   │  └─ config/                    # DI tokens & environment adapters (runtime config)
+│   │
+│   ├─ shared/                       # Reusable, generic building blocks (no business logic)
+│   │  ├─ pipes/                     # Pure pipes (currency, i18n helpers, safeHtml, etc.)
+│   │  ├─ directives/                # Attribute/structural directives (focus, mask, etc.)
+│   │  ├─ components/                # Dumb/presentational components only
+│   │  │  ├─ ui/                     # Buttons, inputs, tables, modals, empty-states
+│   │  │  └─ layout/                 # Header, sidebar, breadcrumbs, shell widgets
+│   │  └─ utils/                     # Reusable helpers (pagination calc, validators)
+│   │
+│   ├─ components/                   # Feature pages grouped by domain/role
+│   │  ├─ patient/                   # Patient-facing features
+│   │  │  ├─ dashboard/              # View/download appointment PDFs (read-only)
+│   │  │  ├─ services/               # Services catalog + "generate ticket" flow
+│   │  │  ├─ payments/               # Tickets list (pending/paid/expired)
+│   │  │  ├─ health-card/            # Request/view health card certificates
+│   │  │  ├─ profile/                # Personal data (change password only)
+│   │  │  └─ patient.routes.ts       # Lazy sub-routes for patient domain
+│   │  ├─ medical/                   # Clinician features (doctor/nurse/etc.)
+│   │  │  ├─ dashboard/              # KPIs + last two PDFs generated by this clinician
+│   │  │  ├─ consultations/          # Create encounter with before-submit summary
+│   │  │  ├─ appointments/           # Search patients and view/download PDFs
+│   │  │  ├─ services/               # Services available for clinician's specialty
+│   │  │  ├─ payments/               # Ticket status by patient (search)
+│   │  │  ├─ attended/               # Quick access to attended patients (paginated)
+│   │  │  └─ profile/                # Professional profile (read-only)
+│   │  │  └─ medical.routes.ts       # Lazy sub-routes for medical domain
+│   │  └─ admin/                     # Administrative features
+│   │     ├─ dashboard/              # KPIs: users, encounters, tickets, services
+│   │     ├─ consultations/          # Audit any encounter (search + read-only)
+│   │     ├─ appointments/           # All attended appointments (paginated + search)
+│   │     ├─ services/               # Create/edit/delete services (CRUD)
+│   │     ├─ payments/               # View/audit all tickets
+│   │     ├─ users/                  # Manage accounts, promote to medical, assign specialty
+│   │     ├─ templates/              # Medical templates and specialties management
+│   │     └─ profile/                # Admin personal data
+│   │     └─ admin.routes.ts         # Lazy sub-routes for admin domain
+│   │
+│   ├─ app.routes.ts                 # Root routes (lazy-load each domain's sub-routes)
+│   ├─ app.config.ts                 # Root providers (provideRouter, HttpClient, interceptors)
+│   ├─ app.html                      # Root component template
+│   ├─ app.scss                      # Root component styles
+│   ├─ app.spec.ts                   # Root component tests
+│   └─ app.ts                        # Root standalone component
+│
+├─ environments/                    # Environment files (used via DI tokens)
+│  ├─ environment.ts                # Dev/staging environment values
+│  └─ environment.prod.ts           # Production environment values
+│
+├─ index.html                       # App host page
+├─ main.ts                          # bootstrapApplication(App, appConfig)
+└─ styles.scss                      # Global styles / Tailwind entry
+
+
+---
+Tables on database:
+
+-- DB_name: db_center_medical   (PostgreSQL)
+
+-- 1) Catalog base tables
+
+CREATE TABLE sys_roles (
+  sys_role_id     BIGSERIAL PRIMARY KEY,
+  name_role       TEXT NOT NULL UNIQUE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Solo los valores definidos por ti:
+  CONSTRAINT sys_roles_name_ck
+    CHECK (name_role IN ('admin','medical','user'))
+);
+
+CREATE TABLE medical_template (
+  medical_template_id BIGSERIAL PRIMARY KEY,
+  name_template       VARCHAR(20) NOT NULL,
+  template_structure  JSONB NOT NULL,
+  created_at          DATE NOT NULL DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE medical_roles (
+  medical_role_id        BIGSERIAL PRIMARY KEY,
+  specialty_name         TEXT NOT NULL UNIQUE,
+  p_medical_template_id  BIGINT REFERENCES medical_template(medical_template_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Solo los valores definidos por ti:
+  CONSTRAINT medical_roles_specialty_ck
+    CHECK (specialty_name IN ('doctor','obstetrician','dentist','psychologist','nurse'))
+);
+
+-- 2) Users
+
+CREATE TABLE users (
+  user_id            BIGSERIAL PRIMARY KEY,
+  dni                VARCHAR(8) UNIQUE CHECK (dni ~ '^[0-9]{1,8}$') NOT NULL,
+  email              TEXT UNIQUE NOT NULL,
+  password           TEXT NOT NULL,
+  p_sys_role_id      BIGINT NOT NULL REFERENCES sys_roles(sys_role_id) ON UPDATE CASCADE
+                        DEFAULT (
+                          (SELECT sys_role_id FROM sys_roles WHERE name_role = 'user')
+                        ),
+  p_medical_role_id  BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX users_role_idx ON users(p_sys_role_id);
+CREATE INDEX users_medrole_idx ON users(p_medical_role_id);
+
+-- 3) encounters 
+
+CREATE TABLE encounters (
+  encounters_id  BIGSERIAL PRIMARY KEY,
+  provider_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  -- médico u otro proveedor
+  patient_id     BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  -- paciente
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX encounters_provider_idx ON encounters(provider_id);
+CREATE INDEX encounters_patient_idx  ON encounters(patient_id);
+
+-- 4) Clinic forms
+
+-- 4.1) Doctor, nurse, psychologist diagnoses form
+CREATE TABLE form_meobps (
+  form_meobps_id   BIGSERIAL PRIMARY KEY,
+  fecha            DATE,
+  hora             TIME,
+  edad             TEXT,
+  tiem_enfermedad  TEXT,
+  mot_consulta     TEXT,
+  apetito          TEXT,
+  sed              TEXT,
+  suenio           TEXT,
+  animo            TEXT,
+  orina            TEXT,
+  deposiciones     TEXT,
+  temperatura      NUMERIC,  
+  pa               TEXT,
+  mmhg_fc          TEXT,
+  fr               TEXT,
+  peso             NUMERIC,
+  talla            NUMERIC,
+  imc              NUMERIC,
+  so               TEXT,
+  diagnostico      TEXT,
+  ex_auxiliares    TEXT,
+  referencia       TEXT,
+  prox_cita        DATE,
+  firma_sello      TEXT,
+  colegio_prof     TEXT,
+  observacion      TEXT,
+  p_encounters_id  BIGINT NOT NULL REFERENCES encounters(encounters_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX form_meobps_encounter_idx ON form_meobps(p_encounters_id);
+
+-- 4.2) Dentist diagnoses form
+CREATE TABLE form_dentist (
+  form_dentist_id       BIGSERIAL PRIMARY KEY,
+  apell_nombres         TEXT,
+  h_c_l                 TEXT,
+  fecha                 DATE,
+  edad                  TEXT,
+  sexo                   VARCHAR(1) CHECK (sexo IN ('M','F')),
+  acompaniante          TEXT,
+  reac_medicamento      TEXT,
+  ant_patologicos       TEXT,
+  piez_cardiaca         TEXT,
+  piez_perdida          TEXT,
+  piez_obturada         TEXT,
+  uso_cepillo           TEXT,
+  pla_blada             TEXT,
+  pla_calcificada       TEXT,
+  estado_higiene        TEXT,
+  ries_estomatologico   TEXT,
+  diag_final            TEXT,
+  trat_efe_fecha        TEXT,
+  trat_efe_procedimiento TEXT,
+  trat_efe_tratamiento  TEXT,
+  trat_efe_firm_sello   TEXT,
+  p_encounters_id       BIGINT NOT NULL REFERENCES encounters(encounters_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  created_at            TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX form_dentist_encounter_idx ON form_dentist(p_encounters_id);
+
+-- 5) services and tickets
+
+CREATE TABLE services (
+  service_id        BIGSERIAL PRIMARY KEY,
+  service_name      TEXT NOT NULL,
+  service_code      TEXT,
+  price             NUMERIC(12,2) NOT NULL DEFAULT 0,
+  p_medical_role_id BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX services_medrole_idx ON services(p_medical_role_id);
+
+CREATE TABLE payment_ticket (
+  ticket_id    BIGSERIAL PRIMARY KEY,
+  amount       NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
+  status       VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid','expired')),
+  p_user_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,
+  p_service_id BIGINT NOT NULL REFERENCES services(service_id) ON UPDATE CASCADE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX payment_ticket_user_idx    ON payment_ticket(p_user_id);
+CREATE INDEX payment_ticket_service_idx ON payment_ticket(p_service_id);
+CREATE INDEX payment_ticket_status_idx  ON payment_ticket(status);
+
+-- 6) Medical card (no required a medical)
+
+CREATE TABLE medical_card (
+  medical_card_id BIGSERIAL PRIMARY KEY,
+  age             TEXT,
+  marital_status  TEXT,
+  level_education TEXT,
+  work_place      TEXT,
+  area            TEXT,
+  blood_group     VARCHAR(3) CHECK (blood_group IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
+  clinical_history TEXT,
+  care_date       TIMESTAMPTZ,
+  expiration_date TIMESTAMPTZ,
+  p_user_id       BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  result_stool    TEXT,
+  status          VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX medical_card_user_idx   ON medical_card(p_user_id);
+CREATE INDEX medical_card_status_idx ON medical_card(status);
+---
+Ahora que conoces el funcionamiento de mi sistema quiero que modifiques en la estructura de folders y archivos que me propusiste. 1, Actua como un desarrollador experto en sistemas, y da una descripcion de lo que hace o sirve cada folder y para cada archivo dar un contexto de lo que debe contener o se busca que contenga. 2, Actua como un experto en backend y conociendo mi sistema, quiero que me generes y resumen breve y preciso de que servicios (DTOS, CRUD's, APIS, 
