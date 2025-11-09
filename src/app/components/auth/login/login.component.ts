@@ -34,7 +34,7 @@ export class LoginComponent {
       next: (tokens) => {
         this.auth.setTokens(tokens as any);
         this.alerts.success('Inicio de sesión exitoso');
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/app');
       },
       error: () => {
         this.alerts.error('Credenciales inválidas', { autoClose: true });
@@ -46,4 +46,3 @@ export class LoginComponent {
     });
   }
 }
-

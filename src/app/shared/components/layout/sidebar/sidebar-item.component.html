@@ -1,0 +1,11 @@
+<a [routerLink]="item().path"
+   class="flex items-center justify-start gap-4 mt-4 p-2 text-gray-900 rounded-lg hover:bg-gray-100 group text-xl"
+   routerLinkActive="bg-gray-100">
+  @if (item().icon) {
+    <i class="text-gray-500 group-hover:text-gray-900 text-xl" [class]="item().icon"></i>
+  }
+  <span class="leading-5">{{ item().label }}</span>
+  @if (item().badge) {
+    <span class="inline-flex items-center justify-center min-w-5 h-5 px-2 text-[10px] font-medium text-blue-800 bg-blue-100 rounded-full">{{ item().badge }}</span>
+  }
+</a>

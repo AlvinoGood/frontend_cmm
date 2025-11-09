@@ -66,7 +66,7 @@ export class RegisterComponent {
       next: (tokens) => {
         this.auth.setTokens(tokens as any);
         this.alerts.success('Cuenta creada');
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/app');
       },
       error: () => {
         this.alerts.error('No se pudo registrar');
