@@ -4,5 +4,5 @@ export const environment = {
     appRealm: 'municusco',
     appClientId: '',
     //apiUrl: 'https://api-convenciones.cusco.gob.pe/center-medical/v1',
-    apiUrl: 'http://localhost:8000/center-medical/v1'
+    apiUrl: 'http://localhost:3000/medical-center/v1'
 };

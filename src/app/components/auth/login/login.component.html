@@ -1,0 +1,30 @@
+<section class="min-h-screen flex items-center justify-center p-4 bg-[--color-surface]">
+  <div class="w-full max-w-sm p-6 bg-white border border-primary rounded-lg shadow-sm">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+      <div class="text-center">
+        <h5 class="text-xl font-semibold text-gray-900">Centro Médico Municipal</h5>
+      </div>
+      <div class="flex justify-center">
+        <img src="/images/doctor.png" alt="Doctor" class="w-54 object-contain" />
+      </div>
+      <div>
+        <label for="dni" class="block mb-2 text-sm font-medium text-gray-900">DNI</label>
+        <input formControlName="dni" id="dni" type="text" inputmode="numeric" placeholder="12345678" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+      </div>
+      <div>
+        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+        <input formControlName="password" id="password" type="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+      </div>
+      <div class="flex items-center">
+        <a routerLink="/auth/forgot" class="ms-auto text-sm text-primary hover:underline">Olvidé mi contraseña</a>
+      </div>
+      <button type="submit" [disabled]="submitting || form.invalid" class="w-full text-white bg-primary hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus:ring-4 focus:outline-none focus:ring-primary font-medium rounded-lg text-sm px-5 py-2.5">
+        Iniciar sesión
+      </button>
+      <div class="text-sm text-gray-500 text-center">
+        ¿No tienes cuenta?
+        <a routerLink="/auth/register" class="text-primary hover:underline">Crear cuenta</a>
+      </div>
+    </form>
+  </div>
+</section>

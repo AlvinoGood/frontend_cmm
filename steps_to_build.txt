@@ -38,9 +38,9 @@ Angular 20 + Tailwind v4+ flowbite
 
 # 5) Sidebar by Role (short)
 
-* **User:** Home, Services, Payments, Medical Card, Profile.
-* **Medical:** Home, Encounters, Appointments, Services, Payments, Patients Served, Profile.
-* **Admin:** Home, Encounters, Appointments, Services, Payments, Users, Templates, Profile.
+* **User:** Inicio, Servicios, Pagos, Tarjetas medicas, Profile.
+* **Medical:** Inicio, Atenciones, Historiales, Servicios, Pagos, Pacientes atendidos, Profile.
+* **Admin:** Inicio, Atenciones, Historiales, Servicios, Pagos, Usuarios, Plantillas, Profile.
 
 # 6) Views (right panel) – functional & concise
 
