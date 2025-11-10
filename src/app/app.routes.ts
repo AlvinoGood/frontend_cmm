@@ -14,6 +14,12 @@ export const routes: Routes = [
         (m) => m.AppShellComponent
       ),
     canActivate: [jwtAuthGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/admin/admin.routes').then(m => m.adminRoutes),
+      },
+    ],
   },
   { path: '**', redirectTo: 'auth' },
 ];

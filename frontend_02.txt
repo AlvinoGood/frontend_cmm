@@ -42,7 +42,7 @@
 * **Inicio** → Dashboard con cant de usuarios, cant de citas atendidas, cant de tickets y cant de servicios brindados.
 * **Atenciones** → Puede revisar cualquier encuentro. (interfaz de solo vista con un "search" que se debe ingresar el DNI para buscar cualquier paciente)
 * **Citas** → Acceso a todos las citas clínicas atendidas (interfaz con tabla de las citas atendidas, de 10 en 10 y con un search para optimizar la busqueda)
-* **Servicios** → Crear, editar o eliminar servicios.
+* **Servicios** → Crear, , Ver, Editar y Eliminar servicios.
 * **Pagos** → Ver y auditar todos los tickets. (interfaz con tabla de 10 en 10)
 * **Usuarios** → Gestionar cuentas (crear, promover a médico, asignar especialidad, editar, eliminar).
 * **Templates** → poder Agregar nuevas plantillas médicas `medical_template`, Especialidades (`medical_roles`)

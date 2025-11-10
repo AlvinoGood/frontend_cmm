@@ -1,0 +1,55 @@
+﻿<div [id]="modalId" [class.hidden]="!open" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[1100] hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative w-full max-w-lg max-h-full">
+    <div class="relative bg-white rounded-lg shadow border text-sm">
+      <div class="flex items-center justify-between p-4 border-b rounded-t">
+        <h3 class="text-base font-semibold text-gray-900">{{ title }}</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" [attr.data-modal-hide]="modalId" (click)="onPreClose($event); cancel.emit()">
+          <span class="sr-only">Cerrar</span>
+          <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <form class="space-y-4" (ngSubmit)="onSubmit()" [formGroup]="form">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Nombre</label>
+            <input formControlName="name" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Codigo</label>
+              <input formControlName="code" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+            </div>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Precio</label>
+              <input formControlName="price" type="number" step="0.01" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+            </div>
+          </div>
+          <div>
+            <label for="medicalRole" class="block mb-2 text-sm font-medium text-gray-900 rounded-lg w-full p-2.5">Especialidad</label>
+            <select id="medicalRole" formControlName="medicalRoleId"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+              <option [ngValue]="null" disabled>Seleccionar aqui</option>
+              @if ((roles()).length > 0) {
+                @for (role of roles(); track role.id) {
+                  <option [ngValue]="role.id">{{ role.specialtyName ?? role.name ?? role.specialty }}</option>
+                }
+              } @else {
+                <option value="" disabled>Especialidades no encontradas</option>
+              }
+            </select>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" [attr.data-modal-hide]="modalId" (click)="onPreClose($event); cancel.emit()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="submit" [attr.data-modal-hide]="modalId" (click)="onPreClose($event)" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

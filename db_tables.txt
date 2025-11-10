@@ -1,0 +1,221 @@
+-- DB_name: db_center_medical   (PostgreSQL)
+
+-- 1) Catalog base tables
+
+CREATE TABLE sys_roles (
+  sys_role_id     BIGSERIAL PRIMARY KEY,
+  name_role       TEXT NOT NULL UNIQUE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT sys_roles_name_ck
+    CHECK (name_role IN ('admin','medical','user'))
+);
+
+CREATE TABLE medical_template (
+  medical_template_id BIGSERIAL PRIMARY KEY,
+  name_template       VARCHAR(20) NOT NULL,
+  file_path           TEXT NOT NULL, 
+  original_file_name  TEXT,
+  mime_type           TEXT NOT NULL DEFAULT 'application/pdf',
+  file_size           BIGINT,
+  created_at          DATE NOT NULL DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE medical_roles (
+  medical_role_id        BIGSERIAL PRIMARY KEY,
+  specialty_name         TEXT NOT NULL UNIQUE,
+  p_medical_template_id  BIGINT REFERENCES medical_template(medical_template_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at             TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 2) Users
+
+-- 2.1. Primero modifica la tabla users sin el DEFAULT
+CREATE TABLE users (
+  user_id            BIGSERIAL PRIMARY KEY,
+  dni                VARCHAR(8) UNIQUE CHECK (dni ~ '^[0-9]{1,8}$') NOT NULL,
+  email              TEXT UNIQUE NOT NULL,
+  password           TEXT NOT NULL,
+  p_sys_role_id      BIGINT NOT NULL REFERENCES sys_roles(sys_role_id) ON UPDATE CASCADE,
+  p_medical_role_id  BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 2.2. Luego crea una función trigger
+CREATE OR REPLACE FUNCTION set_default_role()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.p_sys_role_id IS NULL THEN
+    NEW.p_sys_role_id := (SELECT sys_role_id FROM sys_roles WHERE name_role = 'user');
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2.3. Crea el trigger
+CREATE TRIGGER set_default_role_trigger
+BEFORE INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION set_default_role();
+
+CREATE INDEX users_role_idx ON users(p_sys_role_id);
+CREATE INDEX users_medrole_idx ON users(p_medical_role_id);
+
+-- 3) encounters 
+
+CREATE TABLE encounters (
+  encounters_id  BIGSERIAL PRIMARY KEY,
+  provider_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  -- médico u otro proveedor
+  patient_id     BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  -- paciente
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX encounters_provider_idx ON encounters(provider_id);
+CREATE INDEX encounters_patient_idx  ON encounters(patient_id);
+
+-- 5) services and tickets
+
+CREATE TABLE services (
+  service_id        BIGSERIAL PRIMARY KEY,
+  service_name      TEXT NOT NULL,
+  service_code      TEXT,
+  price             NUMERIC(12,2) NOT NULL DEFAULT 0,
+  p_medical_role_id BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX services_medrole_idx ON services(p_medical_role_id);
+
+CREATE TABLE payment_ticket (
+  ticket_id    BIGSERIAL PRIMARY KEY,
+  amount       NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
+  status       VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid','expired')),
+  p_user_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,
+  p_service_id BIGINT NOT NULL REFERENCES services(service_id) ON UPDATE CASCADE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX payment_ticket_user_idx    ON payment_ticket(p_user_id);
+CREATE INDEX payment_ticket_service_idx ON payment_ticket(p_service_id);
+CREATE INDEX payment_ticket_status_idx  ON payment_ticket(status);
+
+-- 6) Medical card (no required a medical)
+
+CREATE TABLE medical_card (
+  medical_card_id BIGSERIAL PRIMARY KEY,
+  age             TEXT,
+  marital_status  TEXT,
+  level_education TEXT,
+  work_place      TEXT,
+  area            TEXT,
+  blood_group     VARCHAR(3) CHECK (blood_group IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
+  clinical_history TEXT,
+  care_date       TIMESTAMPTZ,
+  expiration_date TIMESTAMPTZ,
+  p_user_id       BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  result_stool    TEXT,
+  status          VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX medical_card_user_idx   ON medical_card(p_user_id);
+CREATE INDEX medical_card_status_idx ON medical_card(status);
+
+-- ultima insercion - documentos (pdf, imagenes, otros)
+-- CREATE TABLE documents (
+--   document_id  BIGSERIAL PRIMARY KEY,
+--   p_user_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+--   kind         TEXT NOT NULL,       
+--   file_path    TEXT NOT NULL,           
+--   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+-- );
+
+-- CREATE INDEX documents_user_idx ON documents(p_user_id);
+-- CREATE INDEX documents_kind_idx ON documents(kind);
+
+================================
+-- Insertions examples
+
+-- inserta sys_roles
+INSERT INTO sys_roles (name_role) VALUES
+('admin'),
+('medical'),
+('user');
+
+INSERT INTO medical_template (name_template, file_path, original_file_name)
+VALUES
+('cartilla dentista', 'templates/cartilla-dentista.pdf', 'cartilla-dentista.pdf'),
+('cartilla me-ob-ps', 'templates/cartilla-me-ob-ps.pdf', 'cartilla-me-ob-ps.pdf');
+
+-- insert medical_roles
+INSERT INTO medical_roles (specialty_name, p_medical_template_id)
+VALUES
+  ('doctor', 2),
+  ('obstetrician', 2),
+  ('psychologist', 2),
+  ('nurse', 2),
+  ('dentist', 1);
+
+
+INSERT INTO services (service_name, service_code, price, p_medical_role_id) VALUES
+
+('CONSULTA MEDICA', '492', 10.00, 1),
+('OBSERVACION EN EMERGENCIA', 'MED-OBS-001', 5.00, 1),                         -- agregado
+('CERTIFICADO MEDICO PRE NUPCIAL POR PERSONA', '489', 50.00, 1),
+('CERTIFICADO MEDICO', '490', 18.00, 1),
+('CONSTANCIA CAP. CHARLA PRIMEROS AUXILIOS', '1255', 6.00, 1),
+('CARNE MEDICO MUNICIPAL NUEVO', '487', 27.50, 1),
+('CARNE MEDICO MUNICIPAL RENOVACION', '488', 23.30, 1),
+('ECOGRAFIA', '1186', 21.00, 1),
+
+
+('EXODONCIA (Extraccion dental)', '493', 10.00, 5),
+('CURACION CON AMALGAMA POR DIENTE', 'DEN-AMG-001', 12.30, 5),                 -- agregado
+('CURACION CON RESINA POR DIENTE', '495', 22.30, 5),
+('PROFILAXIS (Limpieza dental)', '496', 10.00, 5),
+('RADIOGRAFIA DENTAL', 'DEN-RX-001', 8.00, 5),                                 -- agregado
+('TRATAMIENTO PULPAR', '497', 31.30, 5),
+('ENDODONCIA UNIRADICULAR', '498', 50.30, 5),
+('ENDODONCIA MULTIRADICULAR', '499', 105.20, 5),
+('FLUORIZACION POR SESION', '501', 7.80, 5),
+('SELLANTES POR DIENTE', '1200', 12.30, 5),
+
+
+('CURACIONES SIMPLES EN TOPICO', '502', 5.10, 4),
+('SUTURA', '1199', 6.20, 4),
+('INYECTABLE INTRAVENOSO', '504', 3.10, 4),
+('INYECTABLE INTRAMUSCULAR', '505', 2.00, 4),
+('CONTROL DE PRESION ARTERIAL', '1198', 2.60, 4),
+('OXIGENO TERAPIA', '516', 10.00, 4),
+('NEBULIZACIONES', '517', 5.70, 4),
+('SUTURACIONES COMPLEJAS DRENAJE DE ABSESOS', '1106', 12.80, 4),
+('SUTURA - CURACION', '1195', 7.80, 4),
+('VENOCUNS', '1194', 7.80, 4),
+('EVALUACION NUTRICIONAL', '519', 3.10, 4),
+('LAVADO OTICO', '1197', 7.80, 4),
+
+
+('ANALISIS DE EMBARAZO', '506', 12.70, 2),
+('ANALISIS DE AGLUTINACIONES', '507', 13.50, 2),
+('EXAMEN COMPLETO DE ORINA', '508', 7.10, 2),
+('ANALISIS PARASITOLOGICO SERIADO', '509', 15.60, 2),
+('ANALISIS PARASITOLOGICO SIMPLE', '1193', 8.30, 2),
+('ANALISIS DE SECRECION VAGINAL', '514', 12.30, 2),
+('GRUPO SANGUINEO Y FACTOR RH', '510', 7.80, 2),
+('REACCIONES SEROLG.V.D.R.L. (SIFILIS) Y PRUEBA RAPIDA', '511', 12.30, 2),
+('VIH', '512', 14.50, 2),
+('HEMOGRAMA COMPLETO', '513', 15.60, 2),
+('HEPATITIS B', '515', 15.60, 2),
+('EXAMEN DE HEMOGLOBINA', '1192', 7.60, 2),
+('EXAMEN DE HEMATOCRITO', '1191', 7.40, 2),
+('EXAMEN DE GLUCOSA', '1188', 8.30, 2),
+('EXAMEN DE MOCO FECAL', '1189', 9.60, 2),
+('TIEMPO DE SANGRIA Y COAGULACION', '1190', 7.40, 2),
+
+
+('CONSULTA PSICOLOGICA', 'PSY-CON-001', 10.00, 3),                              
+('EXAMEN PSICOLOGICO', 'PSY-EXA-001', 15.00, 3),                                 
+('CERTIFICADO PSICOLOGICO', 'PSY-CER-001', 8.00, 3),                             
+
+
+('MULTA POR RETRASO DE CARNE MEDICO POR MES', 'ADM-MUL-001', 2.50, 4),          
+('POR BUSQUEDA DE NRO DE REGISTRO HISTORIA CLINICA', '1187', 2.20, 4);

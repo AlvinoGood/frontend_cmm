@@ -1,0 +1,66 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MedicalRolesService } from '../../../core/services/medical-roles.service';
+
+export interface ServiceCreateValue {
+  name: string;
+  code?: string;
+  price: number;
+  medicalRoleId?: number;
+}
+
+@Component({
+  selector: 'app-service-create-modal',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './service-create-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ServiceCreateModalComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly rolesSvc = inject(MedicalRolesService);
+
+  @Input() open = false;
+  @Input() title = 'Crear servicio';
+  @Input() modalId = 'modal-create-service';
+  @Output() save = new EventEmitter<ServiceCreateValue>();
+  @Output() cancel = new EventEmitter<void>();
+
+  form = this.fb.group({
+    name: ['', [Validators.required]],
+    code: [''],
+    price: [0, [Validators.required, Validators.min(0)]],
+    medicalRoleId: [null as number | null],
+  });
+
+  roles = signal<any[]>([]);
+
+  ngOnInit(): void {
+    // Cargar especialidades
+    this.rolesSvc.list(20, 0).subscribe({
+      next: (items) => this.roles.set(items ?? []),
+      error: () => this.roles.set([]),
+    });
+  }
+
+  ngOnChanges(): void {
+    // Siempre inicial en blanco para crear (placeholder visible)
+    this.form.reset({ name: '', code: '', price: 0, medicalRoleId: null });
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) return;
+    const value = this.form.getRawValue();
+    this.save.emit({
+      name: value.name ?? '',
+      code: value.code ?? '',
+      price: value.price ?? 0,
+      medicalRoleId: (value.medicalRoleId ?? undefined),
+    });
+  }
+
+  onPreClose(ev: Event) {
+    (ev.currentTarget as HTMLElement | null)?.blur();
+  }
+}

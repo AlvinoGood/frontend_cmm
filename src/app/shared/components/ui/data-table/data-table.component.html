@@ -1,0 +1,62 @@
+<div class="flex items-center justify-between mb-3">
+  <input type="text" [value]="searchTerm" (input)="onSearchInput($event)"
+         placeholder="Buscar..."
+         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-64 p-2.5" />
+  <div class="text-sm text-gray-600">Mostrando {{ startItem }}–{{ endItem }} de {{ total }}</div>
+  
+</div>
+
+<div class="overflow-x-auto">
+<div class="rounded-md overflow-hidden inline-block min-w-full align-middle">
+<table class="w-full min-w-[560px]">
+  <thead>
+    <tr>
+      @for (h of headers; track h.label) {
+        <th scope="col" class="text-left py-2 px-2 text-sm font-semibold text-gray-700">
+          <span class="flex items-center">{{ h.label }}</span>
+        </th>
+      }
+      @if (showActions) {
+        <th scope="col" class="text-left py-2 px-2 text-sm font-semibold text-gray-700">
+          <span class="flex items-center">Acciones</span>
+        </th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (r of rows; track r.id || r.code || r.name; let i = $index) {
+      <tr [style.backgroundColor]="(i % 2 === 1) ? 'color-mix(in oklab, var(--color-accent) 15%, white)' : null">
+        @for (h of headers; track h.label) {
+          <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2" [class.font-medium]="$index === 0">
+            {{ h.key ? r[h.key] : '' }}
+          </td>
+        }
+        @if (showActions) {
+          <td class="whitespace-nowrap py-2 px-2">
+            <div class="flex items-center gap-2">
+              <button type="button" class="bg-green-100 hover:bg-green-200 text-green-700 border border-green-200 rounded w-8 h-8 flex items-center justify-center" title="Ver" (click)="view.emit(r)">
+                <i class="fa-solid fa-road-circle-exclamation text-green-700 text-sm"></i>
+              </button>
+              <button type="button" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 border border-yellow-200 rounded w-8 h-8 flex items-center justify-center" title="Editar" (click)="edit.emit(r)">
+                <i class="fa-solid fa-pen-to-square text-yellow-700 text-sm"></i>
+              </button>
+              <button type="button" class="bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 rounded w-8 h-8 flex items-center justify-center" title="Eliminar" (click)="delete.emit(r)">
+                <i class="fa-solid fa-trash text-red-700 text-sm"></i>
+              </button>
+            </div>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>
+</div>
+</div>
+
+<div class="mt-3 flex items-center justify-between">
+  <button type="button" (click)="prevPage()" [class.opacity-50]="pageIndex === 0" [disabled]="pageIndex === 0"
+          class="px-3 py-2 rounded border text-base">Anterior</button>
+  <div class="text-sm text-gray-600">Página {{ pageIndex + 1 }}</div>
+  <button type="button" (click)="nextPage()" [class.opacity-50]="(pageIndex + 1) * pageSize >= total" [disabled]="(pageIndex + 1) * pageSize >= total"
+          class="px-3 py-2 rounded border text-base">Siguiente</button>
+</div>
