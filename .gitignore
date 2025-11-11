@@ -42,13 +42,13 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-frontend_02.txt
-guide.txt
-instructions.md
-llms-full-angular.txt
-llms-full-flowbite.txt
-steps_to_build.txt
-structure_frontend.txt
-todo.txt
-api-backend.txt
-errors.txt
+# frontend_02.txt
+# guide.txt
+# instructions.md
+# llms-full-angular.txt
+# llms-full-flowbite.txt
+# steps_to_build.txt
+# structure_frontend.txt
+# todo.txt
+# api-backend.txt
+# errors.txt

@@ -1,0 +1,373 @@
+==========================================================
+Collection: Auth
+
+POST {{BASE_URL}}/medical-center/v1/auth/register
+Description: Register a new user account and return tokens
+Token: public
+Content-Type: application/json
+{
+  "dni": "12345678",
+  "email": "john.doe@example.com",
+  "password": "P@ssw0rd123"
+}
+
+POST {{BASE_URL}}/medical-center/v1/auth/login
+Description: Authenticate with DNI and password; returns access and refresh tokens
+Token: public
+Content-Type: application/json
+{
+  "dni": "12345678",
+  "password": "P@ssw0rd123"
+}
+
+POST {{BASE_URL}}/medical-center/v1/auth/refresh
+Description: Exchange a valid refresh token for a new access/refresh pair
+Token: public
+Content-Type: application/json
+{
+  "refreshToken": "<paste refresh token here>"
+}
+
+POST {{BASE_URL}}/medical-center/v1/auth/forgot-password
+Description: Send a password reset link to the user’s email
+Token: public
+Content-Type: application/json
+{
+  "email": "john.doe@example.com"
+}
+
+POST {{BASE_URL}}/medical-center/v1/auth/reset-password
+Description: Reset the password using the token received by email
+Token: public
+Content-Type: application/json
+{
+  "token": "<paste reset token from email>",
+  "newPassword": "N3wP@ssw0rd!"
+}
+
+==========================================================
+Collection: Profile
+
+GET {{BASE_URL}}/medical-center/v1/me
+Description: Return the authenticated user profile
+Token: user | medical | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+==========================================================
+Collection: Users (Admin)
+
+POST {{BASE_URL}}/medical-center/v1/users
+Description: Create a user with an optional role (defaults to user)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "dni": "87654321",
+  "email": "alice@example.com",
+  "password": "S3cur3Pass!",
+  "roleName": "user"
+}
+
+GET {{BASE_URL}}/medical-center/v1/users?limit=10&offset=0
+Description: List users with pagination
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/users/1
+Description: Get user by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+PATCH {{BASE_URL}}/medical-center/v1/users/1
+Description: Update user email and/or password
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "email": "alice.updated@example.com",
+  "password": "N3wS3cur3Pass!"
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/users/1/promote-medical
+Description: Promote a user’s system role (e.g., to medical)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "roleName": "medical"
+}
+
+DELETE {{BASE_URL}}/medical-center/v1/users/1
+Description: Delete a user by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+==========================================================
+Collection: Medical Templates (Admin)
+
+GET {{BASE_URL}}/medical-center/v1/medical-templates?limit=20&offset=0
+Description: List medical templates with pagination
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/medical-templates/1
+Description: Get medical template by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+POST {{BASE_URL}}/medical-center/v1/medical-templates
+Description: Create a medical template (structure JSON)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "name": "form_meobps_v1",
+  "structure": { "fields": ["fecha","hora","diagnostico"] }
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/medical-templates/1
+Description: Update a medical template
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "name": "form_dentist_v1"
+}
+
+DELETE {{BASE_URL}}/medical-center/v1/medical-templates/2
+Description: Delete a medical template by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+==========================================================
+Collection: Medical Roles (Admin)
+
+GET {{BASE_URL}}/medical-center/v1/medical-roles
+Description: List medical roles (specialties)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/medical-roles/1
+Description: Get medical role by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+POST {{BASE_URL}}/medical-center/v1/medical-roles
+Description: Create a medical role and link optional template
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "specialtyName": "doctor",
+  "templateId": 1
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/medical-roles/5
+Description: Update medical role name/template
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "specialtyName": "dentist",
+  "templateId": 2
+}
+
+DELETE {{BASE_URL}}/medical-center/v1/medical-roles/4
+Description: Delete a medical role by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+==========================================================
+Collection: Services Catalog
+
+GET {{BASE_URL}}/medical-center/v1/services?limit=20&offset=0
+Description: List all services (any authenticated user)
+Token: user | medical | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/services/my-specialty?limit=50&offset=0
+Description: List services for current medical user’s specialty
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+
+POST {{BASE_URL}}/medical-center/v1/services
+Description: Create a service and optionally assign a medical role
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "name": "Consulta médica general",
+  "code": "CONS-GEN",
+  "price": 35.50,
+  "medicalRoleId": 1
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/services/3
+Description: Update a service’s fields (name/code/price/medicalRoleId)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "price": 40.00
+}
+
+DELETE {{BASE_URL}}/medical-center/v1/services/4
+Description: Delete a service by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+==========================================================
+Collection: Documents
+
+GET {{BASE_URL}}/medical-center/v1/documents/me?limit=20&offset=0
+Description: List documents owned by the current user
+Token: user | medical | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/documents/1/download
+Description: Download a document by id (owner or admin only)
+Token: user (owner) | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+==========================================================
+Collection: Encounters
+
+POST {{BASE_URL}}/medical-center/v1/encounters
+Description: Create an encounter between the authenticated provider and a patient by DNI
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "patientDni": "12345678"
+}
+
+GET {{BASE_URL}}/medical-center/v1/encounters/me?limit=10&offset=0
+Description: List encounters for the authenticated patient
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/encounters/search?patientDni=12345678&limit=10&offset=0
+Description: Search encounters by patient DNI (for medical/admin)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/encounters/1/pdf
+Description: Stream the encounter PDF (owner patient, provider, or admin)
+Token: user (owner) | medical (provider) | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+==========================================================
+Collection: Forms (Clinical)
+
+# MEOBPS (doctor/nurse/psychologist)
+POST {{BASE_URL}}/medical-center/v1/forms/meobps
+Description: Create MEOBPS form linked to an encounter
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "encounterId": 1,
+  "fecha": "2025-10-06",
+  "hora": "10:30:00",
+  "edad": "32",
+  "tiemEnfermedad": "2 semanas",
+  "motConsulta": "Dolor de cabeza",
+  "temperatura": "37.5",
+  "pa": "120/80",
+  "diagnostico": "Cefalea tensional"
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/forms/meobps/1
+Description: Update MEOBPS form fields
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "observacion": "Mejoría clínica"
+}
+
+# Dentist
+POST {{BASE_URL}}/medical-center/v1/forms/dentist
+Description: Create Dentist form linked to an encounter
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "encounterId": 1,
+  "apellNombres": "Perez Juan",
+  "fecha": "2025-10-06",
+  "sexo": "M",
+  "diagFinal": "Caries"
+}
+
+PATCH {{BASE_URL}}/medical-center/v1/forms/dentist/1
+Description: Update Dentist form fields
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "tratEfeTratamiento": "Obturación"
+}
+
+==========================================================
+Collection: Medical Cards
+
+POST {{BASE_URL}}/medical-center/v1/medical-cards
+Description: Create a medical card for current user
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+{
+  "age": "29",
+  "maritalStatus": "single",
+  "levelEducation": "college",
+  "workPlace": "Acme Corp",
+  "area": "IT",
+  "bloodGroup": "O+",
+  "clinicalHistory": "No chronic diseases",
+  "careDate": "2025-10-06T10:00:00.000Z",
+  "expirationDate": "2026-10-06T10:00:00.000Z",
+  "resultStool": "Normal"
+}
+
+GET {{BASE_URL}}/medical-center/v1/medical-cards/me?limit=10&offset=0
+Description: List medical cards owned by current user
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/medical-cards/1
+Description: Get a medical card by id (owner or admin)
+Token: user (owner) | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/medical-cards/1/pdf
+Description: Download the medical card PDF (owner or admin)
+Token: user (owner) | admin
+Authorization: Bearer {{USER_TOKEN}}
+
+==========================================================
+Collection: Payments (Tickets)
+
+POST {{BASE_URL}}/medical-center/v1/payments/tickets
+Description: Create a payment ticket for a service
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+{
+  "serviceId": 1
+}
+
+GET {{BASE_URL}}/medical-center/v1/payments/tickets/me?status=pending&limit=10&offset=0
+Description: List tickets created by current user, filter by status
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/payments/tickets/search?patientDni=12345678&status=pending&limit=10&offset=0
+Description: Search tickets by patient DNI (medical staff)
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/payments/tickets?status=pending&limit=10&offset=0
+Description: List all tickets, optionally filtered by status
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}

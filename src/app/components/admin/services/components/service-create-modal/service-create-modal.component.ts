@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnInit, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MedicalRolesService } from '../../../core/services/medical-roles.service';
+import { MedicalRolesService } from '../../../../../core/services/medical-roles.service';
 
 export interface ServiceCreateValue {
   name: string;
@@ -64,3 +64,4 @@ export class ServiceCreateModalComponent implements OnInit {
     (ev.currentTarget as HTMLElement | null)?.blur();
   }
 }
+

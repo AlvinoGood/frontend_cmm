@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewChild, ElementRef, inje
 import { CommonModule } from '@angular/common';
 import { DataTableComponent, DataTableHeader } from '../../../shared/components/ui/data-table/data-table.component';
 import { ServicesService } from '../../../core/services/services.service';
-import { ServiceFormModalComponent, ServiceFormValue } from './service-form-modal.component';
-import { ServiceCreateModalComponent, ServiceCreateValue } from './service-create-modal.component';
+import { ServiceFormModalComponent, ServiceFormValue } from './components/service-form-modal/service-form-modal.component';
+import { ServiceCreateModalComponent, ServiceCreateValue } from './components/service-create-modal/service-create-modal.component';
 import { AlertService } from '../../../core/services/alert.service';
 import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-modal/confirm-modal.component';
 
@@ -20,7 +20,7 @@ export class AdminServicesComponent implements OnInit {
 
   headers: DataTableHeader[] = [
     { label: 'Nombre', key: 'name' },
-    { label: 'Código', key: 'code' },
+    { label: 'Codigo', key: 'code' },
     { label: 'Precio', key: 'price' },
     { label: 'Especialidad', key: 'specialty' },
   ];

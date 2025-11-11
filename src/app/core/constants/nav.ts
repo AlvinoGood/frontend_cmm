@@ -21,8 +21,8 @@ export const NAV_ADMIN: NavItem[] = [
   { id: 'encounters', label: 'Atenciones', path: '/app/encounters', icon: 'fa-solid fa-stethoscope', roles: ['admin'] },
   { id: 'appointments', label: 'Historiales', path: '/app/appointments', icon: 'fa-solid fa-file-medical', roles: ['admin'] },
   { id: 'services', label: 'Servicios', path: '/app/services', icon: 'fa-solid fa-briefcase-medical', roles: ['admin'] },
+  { id: 'medical-roles', label: 'Roles Médicos', path: '/app/medical-roles', icon: 'fa-solid fa-user-doctor', roles: ['admin'] },
   { id: 'payments', label: 'Pagos', path: '/app/payments', icon: 'fa-solid fa-credit-card', roles: ['admin'] },
   { id: 'users', label: 'Usuarios', path: '/app/users', icon: 'fa-solid fa-users', roles: ['admin'] },
   { id: 'templates', label: 'Plantillas', path: '/app/templates', icon: 'fa-solid fa-file-lines', roles: ['admin'] },
 ];
-

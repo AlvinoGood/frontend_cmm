@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { ModalComponent } from '../../../shared/components/ui/modal/modal.component';
-import { MedicalRolesService } from '../../../core/services/medical-roles.service';
+import { ModalComponent } from '../../../../../shared/components/ui/modal/modal.component';
+import { MedicalRolesService } from '../../../../../core/services/medical-roles.service';
 
 export interface ServiceFormValue {
   id?: number;
