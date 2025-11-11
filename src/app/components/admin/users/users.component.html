@@ -1,0 +1,112 @@
+﻿<section class="p-4">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Usuarios</h2>
+  </div>
+  <div class="bg-white border rounded-lg p-4">
+    <app-data-table
+      [headers]="headers"
+      [rows]="rows()"
+      [showActions]="true"
+      [showPromote]="true"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize"
+      [searchTerm]="searchTerm()"
+      (searchChange)="onSearchChange($event)"
+      (pageChange)="onPageChange($event)"
+      (view)="openView($event)"
+      (edit)="openEdit($event)"
+      (delete)="onDelete($event)"
+      (promote)="onPromote($event)"
+    ></app-data-table>
+  </div>
+
+  <div [class.hidden]="!viewOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Detalle de usuario</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeView()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-2 text-sm">
+          <div class="flex justify-start"><span class="text-gray-500">Id: </span><span class="font-medium">{{ viewing?.id }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">DNI: </span><span class="font-medium">{{ viewing?.dni }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">Email: </span><span class="font-medium">{{ viewing?.email }}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div [class.hidden]="!promoteOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Promover a medico</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closePromote()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-4">
+                    <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Rol médico</label>
+            <select (change)="onRoleChange($event)" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+              <option value="" disabled selected>Seleccionar aquí</option>
+              @for (role of roles(); track role.id) {
+                <option [value]="role.id">{{ role.specialtyName ?? role.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" (click)="closePromote()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="button" (click)="requestPromoteConfirm()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm" [disabled]="selectedRoleId() == null">Promover</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div [class.hidden]="!editOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Editar usuario</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeEdit()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <form class="space-y-4" (ngSubmit)="saveEdit({ email: emailInput.value || undefined, password: passwordInput.value || undefined })">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+              <input #emailInput type="email" [value]="editing?.email || ''" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+            </div>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+              <input #passwordInput type="password" placeholder="Opcional" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button type="button" (click)="closeEdit()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+              <button type="submit" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-confirm-modal [open]="confirmPromoteOpen()" title="Confirmar promovido" [message]="'¿Promover a medico al usuario ' + (promoting?.dni || promoting?.id) + '?'" (cancel)="closePromoteConfirm()" (confirm)="doPromote()" />
+  <app-confirm-modal [open]="deleteOpen()" title="Eliminar usuario" [message]="'¿Eliminar usuario ' + (deleting?.dni || deleting?.id) + '?'" (cancel)="closeDelete()" (confirm)="confirmDelete()" />
+</section>
+
+
+
+

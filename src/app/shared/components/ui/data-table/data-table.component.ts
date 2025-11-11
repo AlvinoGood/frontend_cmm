@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 export interface DataTableHeader {
   label: string;
@@ -8,6 +9,7 @@ export interface DataTableHeader {
 @Component({
   selector: 'app-data-table',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +19,7 @@ export class DataTableComponent {
   @Input() headers: DataTableHeader[] = [];
   @Input() rows: any[] = [];
   @Input() showActions = false;
+  @Input() showPromote = false;
 
   // Search & pagination (headless)
   @Input() total = 0;
@@ -31,6 +34,7 @@ export class DataTableComponent {
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
+  @Output() promote = new EventEmitter<any>();
 
   private searchTimer: any;
   onSearchInput(ev: Event) {

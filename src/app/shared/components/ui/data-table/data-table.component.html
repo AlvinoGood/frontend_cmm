@@ -27,7 +27,7 @@
     @for (r of rows; track r.id || r.code || r.name; let i = $index) {
       <tr [style.backgroundColor]="(i % 2 === 1) ? 'color-mix(in oklab, var(--color-accent) 15%, white)' : null">
         @for (h of headers; track h.label) {
-          <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2" [class.font-medium]="$index === 0">
+          <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2" [class.font-medium]="$index === 0" [ngClass]="{'text-gray-400': (h.key ? (r[h.key] === 'No definido') : false)}">
             {{ h.key ? r[h.key] : '' }}
           </td>
         }
@@ -43,6 +43,11 @@
               <button type="button" class="bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 rounded w-8 h-8 flex items-center justify-center" title="Eliminar" (click)="delete.emit(r)">
                 <i class="fa-solid fa-trash text-red-700 text-sm"></i>
               </button>
+              @if (showPromote) {
+                <button type="button" class="bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200 rounded w-8 h-8 flex items-center justify-center" title="Promover a médico" (click)="promote.emit(r)">
+                  <i class="fa-solid fa-user-doctor text-blue-700 text-sm"></i>
+                </button>
+              }
             </div>
           </td>
         }
