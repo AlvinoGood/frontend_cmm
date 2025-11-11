@@ -1,62 +1,97 @@
-Collection: Medical Roles (Admin)
+Collection: Users (Admin)
 
-GET {{BASE_URL}}/medical-center/v1/medical-roles
-Description: List medical roles (specialties)
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
-
-GET {{BASE_URL}}/medical-center/v1/medical-roles/1
-Description: Get medical role by id
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
-
-POST {{BASE_URL}}/medical-center/v1/medical-roles
-Description: Create a medical role and link optional template
+POST {{BASE_URL}}/medical-center/v1/users
+Description: Create a user with an optional role (defaults to user)
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 {
-  "specialtyName": "doctor",
-  "templateId": 1
+  "dni": "87654321",
+  "email": "alice@example.com",
+  "password": "S3cur3Pass!",
+  "roleName": "user"
 }
 
-PATCH {{BASE_URL}}/medical-center/v1/medical-roles/5
-Description: Update medical role name/template
+GET {{BASE_URL}}/medical-center/v1/users
+Description: List users with pagination
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+GET {{BASE_URL}}/medical-center/v1/users/1
+Description: Get user by id
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+PATCH {{BASE_URL}}/medical-center/v1/users/1
+Description: Update user email and/or password
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 {
-  "specialtyName": "dentist",
-  "templateId": 2
+  "email": "alice.updated@example.com",
+  "password": "N3wS3cur3Pass!"
 }
 
-DELETE {{BASE_URL}}/medical-center/v1/medical-roles/4
-Description: Delete a medical role by id
+PATCH {{BASE_URL}}/medical-center/v1/users/1/promote-medical
+Description: Promote a user’s system role (e.g., to medical)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "roleName": "medical"
+}
+
+DELETE {{BASE_URL}}/medical-center/v1/users/1
+Description: Delete a user by id
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
 ---
-Data in database after to add medical-roles:
+Tabble about users:
 
-## medical_roles
-
-medical_role_id - specialty_name - p_medical_template_id
-1 - doctor - 1
-2 - obstetrician - 1
-3 - psychologist - 1
-4 - nurse - 1 (this id template is only momentarily)
-5 - dentist - 2
-
-
----
-Tabble about medical_roles:
-
-CREATE TABLE medical_roles (
-  medical_role_id        BIGSERIAL PRIMARY KEY,
-  specialty_name         TEXT NOT NULL UNIQUE,
-  p_medical_template_id  BIGINT REFERENCES medical_template(medical_template_id) ON UPDATE CASCADE ON DELETE SET NULL,
-  created_at             TIMESTAMPTZ NOT NULL DEFAULT now()
+CREATE TABLE users (
+  user_id            BIGSERIAL PRIMARY KEY,
+  dni                VARCHAR(8) UNIQUE CHECK (dni ~ '^[0-9]{1,8}$') NOT NULL,
+  email              TEXT UNIQUE NOT NULL,
+  password           TEXT NOT NULL,
+  p_sys_role_id      BIGINT NOT NULL REFERENCES sys_roles(sys_role_id) ON UPDATE CASCADE,
+  p_medical_role_id  BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
+  created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+---
+
+Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/users":
+
+{
+    "success": true,
+    "data": {
+        "total": 2,
+        "items": [
+            {
+                "id": 2,
+                "dni": "12345678",
+                "email": "levitagoodlvns@gmail.com",
+                "role": {
+                    "id": 1,
+                    "name": "admin"
+                },
+                "createdAt": "2025-11-09T00:46:36.495Z"
+            },
+            {
+                "id": 1,
+                "dni": "75206743",
+                "email": "lev.alvin426@gmail.com",
+                "role": {
+                    "id": 3,
+                    "name": "user"
+                },
+                "createdAt": "2025-11-09T00:39:01.141Z"
+            }
+        ]
+    },
+    "timestamp": "2025-11-11T06:33:01.969Z"
+}
 
 ---
 
@@ -81,7 +116,7 @@ Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/medical-
                     "createdAt": "2025-10-18"
                 }
             },
-			...
+            ...
         ]
     },
     "timestamp": "2025-11-11T04:29:12.386Z"

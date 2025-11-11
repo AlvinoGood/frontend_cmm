@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTableComponent, DataTableHeader } from '../../../shared/components/ui/data-table/data-table.component';
 import { ServicesService } from '../../../core/services/services.service';
@@ -36,9 +36,6 @@ export class AdminServicesComponent implements OnInit {
   editing: any | null = null;
   deleteOpen = signal(false);
   deleting: any | null = null;
-  @ViewChild('editTrigger', { static: true }) editTrigger!: ElementRef<HTMLButtonElement>;
-  @ViewChild('deleteTrigger', { static: true }) deleteTrigger!: ElementRef<HTMLButtonElement>;
-  @ViewChild('viewTrigger', { static: true }) viewTrigger!: ElementRef<HTMLButtonElement>;
   viewOpen = signal(false);
   viewing: any | null = null;
   private readonly alerts = inject(AlertService);
@@ -114,11 +111,7 @@ export class AdminServicesComponent implements OnInit {
     });
   }
 
-  openEdit(row: any) {
-    this.editing = row;
-    this.editOpen.set(true);
-    queueMicrotask(() => this.editTrigger?.nativeElement.click());
-  }
+  openEdit(row: any) { this.editing = row; this.editOpen.set(true); }
   closeEdit() { this.editOpen.set(false); this.editing = null; }
   saveEdit(val: ServiceFormValue) {
     if (!this.editing?.id) return;
@@ -139,13 +132,9 @@ export class AdminServicesComponent implements OnInit {
 
   onView(row: any) {}
   onEdit(row: any) { this.openEdit(row); }
-  onDelete(row: any) { this.deleting = row; this.deleteOpen.set(true); queueMicrotask(() => this.deleteTrigger?.nativeElement.click()); }
+  onDelete(row: any) { this.deleting = row; this.deleteOpen.set(true); }
 
-  openView(row: any) {
-    this.viewing = row;
-    this.viewOpen.set(true);
-    queueMicrotask(() => this.viewTrigger?.nativeElement.click());
-  }
+  openView(row: any) { this.viewing = row; this.viewOpen.set(true); }
   closeView() { this.viewOpen.set(false); this.viewing = null; }
   closeDelete() { this.deleteOpen.set(false); this.deleting = null; }
   confirmDelete() {
@@ -160,4 +149,3 @@ export class AdminServicesComponent implements OnInit {
     });
   }
 }
-

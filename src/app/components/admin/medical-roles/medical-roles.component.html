@@ -1,0 +1,51 @@
+<section class="p-4">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Roles Médicos</h2>
+    <button type="button" (click)="openCreate()" class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
+      <i class="fa-solid fa-square-plus"></i>
+      Nuevo rol
+    </button>
+  </div>
+  <div class="bg-white border rounded-lg p-4">
+    <app-data-table
+      [headers]="headers"
+      [rows]="rows()"
+      [showActions]="true"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize"
+      [searchTerm]="searchTerm()"
+      (searchChange)="onSearchChange($event)"
+      (pageChange)="onPageChange($event)"
+      (view)="openView($event)"
+      (edit)="openEdit($event)"
+      (delete)="onDelete($event)"
+    ></app-data-table>
+  </div>
+
+  <app-medical-role-form-modal modalId="modal-create-role" [open]="createOpen()" title="Crear rol médico" (cancel)="closeCreate()" (save)="saveCreate($event)" />
+  <app-medical-role-form-modal modalId="modal-edit-role" [open]="editOpen()" title="Editar rol médico" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" />
+  <app-confirm-modal [open]="deleteOpen()" title="Eliminar rol" [message]="'¿Eliminar ' + (deleting?.specialtyName || '') + '?'" (cancel)="closeDelete()" (confirm)="confirmDelete()" />
+
+  <div id="modal-view-role" [class.hidden]="!viewingOpen()" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Detalle del rol</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeView()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-2 text-sm">
+          <div class="flex justify-start"><span class="text-gray-500">Especialidad: </span><span class="font-medium">{{ viewing?.specialtyName }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">Plantilla: </span><span class="font-medium">{{ viewing?.templateName || '—' }}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</section>

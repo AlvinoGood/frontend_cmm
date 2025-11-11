@@ -1,9 +1,9 @@
-<div id="confirm-modal" [class.hidden]="!open" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[1100] hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="confirm-modal" [class.hidden]="!open" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
   <div class="relative w-full max-w-md max-h-full">
     <div class="relative bg-white rounded-lg shadow border text-sm">
       <div class="flex items-center justify-between p-4 border-b rounded-t">
         <h3 class="text-base font-semibold text-gray-900">{{ title }}</h3>
-          <button type="button" class="text-gray-400 hover:text-gray-600" data-modal-hide="confirm-modal" (click)="onCancelClick($event)">
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="onCancelClick($event)">
           <span class="sr-only">Cerrar</span>
           <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
@@ -13,8 +13,8 @@
       <div class="p-4">
         <p class="text-sm text-gray-700">{{ message }}</p>
         <div class="flex items-center justify-end gap-2 pt-4">
-          <button type="button" data-modal-hide="confirm-modal" (click)="onCancelClick($event)" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
-          <button type="button" data-modal-hide="confirm-modal" (click)="onConfirmClick($event)" class="px-3 py-2 rounded-md text-white bg-danger hover:bg-accent hover:text-danger text-sm">Confirmar</button>
+          <button type="button" (click)="onCancelClick($event)" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+          <button type="button" (click)="onConfirmClick($event)" class="px-3 py-2 rounded-md text-white bg-danger hover:bg-accent hover:text-danger text-sm">Confirmar</button>
         </div>
       </div>
     </div>

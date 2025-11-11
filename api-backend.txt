@@ -105,7 +105,7 @@ Authorization: Bearer {{ADMIN_TOKEN}}
 ==========================================================
 Collection: Medical Templates (Admin)
 
-GET {{BASE_URL}}/medical-center/v1/medical-templates?limit=20&offset=0
+GET {{BASE_URL}}/medical-center/v1/medical-templates
 Description: List medical templates with pagination
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
