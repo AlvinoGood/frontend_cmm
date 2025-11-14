@@ -106,7 +106,7 @@ Authorization: Bearer {{ADMIN_TOKEN}}
 Collection: Medical Templates (Admin)
 
 GET {{BASE_URL}}/medical-center/v1/medical-templates
-Description: List medical templates with pagination
+Description: List all medical templates (no pagination)
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
@@ -116,28 +116,39 @@ Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
 POST {{BASE_URL}}/medical-center/v1/medical-templates
-Description: Create a medical template (structure JSON)
+Description: Create a medical template (file metadata JSON)
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 {
-  "name": "form_meobps_v1",
-  "structure": { "fields": ["fecha","hora","diagnostico"] }
+  "name": "cartilla me-ob-ps",
+  "filePath": "templates/cartilla-me-ob-ps.pdf",
+  "originalFileName": "cartilla-me-ob-ps.pdf",
+  "mimeType": "application/pdf",
+  "fileSize": 123456
 }
 
-PATCH {{BASE_URL}}/medical-center/v1/medical-templates/1
-Description: Update a medical template
+POST {{BASE_URL}}/medical-center/v1/medical-templates/upload
+Description: Upload a PDF and create a medical template
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
-Content-Type: application/json
-{
-  "name": "form_dentist_v1"
-}
+Content-Type: multipart/form-data
+name: cartilla me-ob-ps
+file: <attach PDF file>
+
+PATCH {{BASE_URL}}/medical-center/v1/medical-templates/1
+Description: Update a medical template (multipart; optional file and/or name)
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: multipart/form-data
+name: cartilla dentista   # optional
+file: <attach PDF file>   # optional
 
 DELETE {{BASE_URL}}/medical-center/v1/medical-templates/2
 Description: Delete a medical template by id
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
+
 
 ==========================================================
 Collection: Medical Roles (Admin)

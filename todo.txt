@@ -1,67 +1,45 @@
-Collection: Users (Admin)
+Collection: Encounters
 
-POST {{BASE_URL}}/medical-center/v1/users
-Description: Create a user with an optional role (defaults to user)
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
+POST {{BASE_URL}}/medical-center/v1/encounters
+Description: Create an encounter between the authenticated provider and a patient by DNI
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
 Content-Type: application/json
 {
-  "dni": "87654321",
-  "email": "alice@example.com",
-  "password": "S3cur3Pass!",
-  "roleName": "user"
+  "patientDni": "12345678"
 }
 
-GET {{BASE_URL}}/medical-center/v1/users
-Description: List users with pagination
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
+GET {{BASE_URL}}/medical-center/v1/encounters/me
+Description: List all encounters for the authenticated patient
+Token: user
+Authorization: Bearer {{USER_TOKEN}}
 
-GET {{BASE_URL}}/medical-center/v1/users/1
-Description: Get user by id
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
+GET {{BASE_URL}}/medical-center/v1/encounters/search/12345678
+Description: Search encounters by patient DNI (for medical/admin)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}}
 
-PATCH {{BASE_URL}}/medical-center/v1/users/1
-Description: Update user email and/or password
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
-Content-Type: application/json
-{
-  "email": "alice.updated@example.com",
-  "password": "N3wS3cur3Pass!"
-}
 
-PATCH {{BASE_URL}}/medical-center/v1/users/1/promote-medical
-Description: Promote a user’s system role (e.g., to medical)
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
-Content-Type: application/json
-{
-  "roleName": "medical"
-}
-
-DELETE {{BASE_URL}}/medical-center/v1/users/1
-Description: Delete a user by id
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
+GET {{BASE_URL}}/medical-center/v1/encounters
+Description: List all encounters (for medical/admin, includes provider and patient details)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}}
 
 ---
-Tabble about users:
 
-CREATE TABLE users (
-  user_id            BIGSERIAL PRIMARY KEY,
-  dni                VARCHAR(8) UNIQUE CHECK (dni ~ '^[0-9]{1,8}$') NOT NULL,
-  email              TEXT UNIQUE NOT NULL,
-  password           TEXT NOT NULL,
-  p_sys_role_id      BIGINT NOT NULL REFERENCES sys_roles(sys_role_id) ON UPDATE CASCADE,
-  p_medical_role_id  BIGINT REFERENCES medical_roles(medical_role_id) ON UPDATE CASCADE ON DELETE SET NULL,
-  created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+CREATE TABLE encounters (
+  encounters_id  BIGSERIAL PRIMARY KEY,
+  provider_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  
+  patient_id     BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE, 
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE INDEX encounters_provider_idx ON encounters(provider_id);
+CREATE INDEX encounters_patient_idx  ON encounters(patient_id);
+
 ---
 
-Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/users":
+Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/encounters" with admin token :
 
 {
     "success": true,
@@ -70,54 +48,57 @@ Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/users":
         "items": [
             {
                 "id": 2,
-                "dni": "12345678",
-                "email": "levitagoodlvns@gmail.com",
-                "role": {
-                    "id": 1,
-                    "name": "admin"
+                "provider": {
+                    "id": 4,
+                    "dni": "13131313",
+                    "email": "testting03@gmail.com",
+                    "password": "$2b$10$uj7UIRPyLAcpEUIMpSLzk.9UkFO91GU4zm1/29K3JDxZ01qWSVheW",
+                    "role": {
+                        "id": 2,
+                        "name": "medical"
+                    },
+                    "createdAt": "2025-11-12T20:19:22.810Z"
                 },
-                "createdAt": "2025-11-09T00:46:36.495Z"
+                "patient": {
+                    "id": 3,
+                    "dni": "12121212",
+                    "email": "testting01@gmail.com",
+                    "password": "$2b$10$ylRM6Umw0LTC4gRwb/an4ee9EC1bnvfKawL2Kyk4lMz6EZzZKw01q",
+                    "role": {
+                        "id": 3,
+                        "name": "user"
+                    },
+                    "createdAt": "2025-11-12T20:19:10.688Z"
+                },
+                "createdAt": "2025-11-14T03:00:13.332Z"
             },
             {
                 "id": 1,
-                "dni": "75206743",
-                "email": "lev.alvin426@gmail.com",
-                "role": {
-                    "id": 3,
-                    "name": "user"
+                "provider": {
+                    "id": 5,
+                    "dni": "14141414",
+                    "email": "testting04@gmail.com",
+                    "password": "$2b$10$4dbUb95Ok5qc8rXa0ilsQuv1m/utuQxroK5MImO/RVJbVeLs0aWbS",
+                    "role": {
+                        "id": 2,
+                        "name": "medical"
+                    },
+                    "createdAt": "2025-11-12T20:19:35.940Z"
                 },
-                "createdAt": "2025-11-09T00:39:01.141Z"
+                "patient": {
+                    "id": 3,
+                    "dni": "12121212",
+                    "email": "testting01@gmail.com",
+                    "password": "$2b$10$ylRM6Umw0LTC4gRwb/an4ee9EC1bnvfKawL2Kyk4lMz6EZzZKw01q",
+                    "role": {
+                        "id": 3,
+                        "name": "user"
+                    },
+                    "createdAt": "2025-11-12T20:19:10.688Z"
+                },
+                "createdAt": "2025-11-14T02:57:03.889Z"
             }
         ]
     },
-    "timestamp": "2025-11-11T06:33:01.969Z"
-}
-
----
-
-Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/medical-roles":
-
-{
-    "success": true,
-    "data": {
-        "total": 6,
-        "items": [
-            {
-                "id": 1,
-                "specialtyName": "doctor",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 2,
-                    "name": "cartilla me-ob-ps",
-                    "filePath": "templates/cartilla-me-ob-ps.pdf",
-                    "originalFileName": "cartilla-me-ob-ps.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
-            },
-            ...
-        ]
-    },
-    "timestamp": "2025-11-11T04:29:12.386Z"
+    "timestamp": "2025-11-14T04:04:32.904Z"
 }

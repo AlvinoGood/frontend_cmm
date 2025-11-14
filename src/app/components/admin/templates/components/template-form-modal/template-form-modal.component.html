@@ -1,0 +1,32 @@
+<div [id]="modalId" [class.hidden]="!open" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+  <div class="relative w-full max-w-lg max-h-full">
+    <div class="relative bg-white rounded-lg shadow border text-sm">
+      <div class="flex items-center justify-between p-4 border-b rounded-t">
+        <h3 class="text-base font-semibold text-gray-900">Editar plantilla</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" (click)="onPreClose($event); cancel.emit()">
+          <span class="sr-only">Cerrar</span>
+          <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <form class="space-y-4" (ngSubmit)="onSubmit()" [formGroup]="form">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Nombre</label>
+            <input formControlName="name" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Archivo (PDF) opcional</label>
+            <input type="file" accept="application/pdf" (change)="onFileChange($event)" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-3 file:rounded file:border-0 file:text-sm file:bg-primary file:text-white hover:file:bg-accent" />
+          </div>
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" (click)="onPreClose($event); cancel.emit()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="submit" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

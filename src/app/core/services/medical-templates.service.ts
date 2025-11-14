@@ -13,5 +13,16 @@ export class MedicalTemplatesService {
       map((r) => r?.data?.items ?? r?.items ?? r?.results ?? [])
     );
   }
-}
 
+  create(form: FormData) {
+    return this.http.post(`${this.base}/medical-templates/upload`, form);
+    }
+
+  update(id: number, form: FormData) {
+    return this.http.patch(`${this.base}/medical-templates/${id}`, form);
+  }
+
+  remove(id: number) {
+    return this.http.delete(`${this.base}/medical-templates/${id}`);
+  }
+}
