@@ -1,4 +1,4 @@
-<div class="flex items-center ms-3 mr-4">
+﻿<div class="flex items-center ms-3 mr-4">
   <div>
     <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" aria-expanded="false" data-dropdown-toggle="dropdown-user">
       <span class="sr-only">Abrir usuario</span>
@@ -7,16 +7,53 @@
   </div>
   <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
     <div class="px-4 py-3" role="none">
-      <p class="text-sm font-medium text-gray-900 truncate" role="none">usuario@correo.com</p>
+      <p class="text-sm font-medium text-gray-900 truncate" role="none">{{ profile().email || 'Sin correo' }}</p>
     </div>
     <ul class="py-1" role="none">
-      <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Mi perfil</a></li>
+      <li>
+      <button type="button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" (click)="openProfile()">Mi perfil</button>
+      </li>
       <li class="px-4 py-2">
         <button type="button" (click)="onLogout()" class="w-full text-sm font-medium text-white bg-primary hover:bg-accent hover:text-primary rounded-md px-3 py-2">
-          Cerrar sesión
+          Cerrar sesion
         </button>
       </li>
     </ul>
+  </div>
+</div>
+
+<div [class.hidden]="!profileOpen()" class="fixed inset-0 z-[1200] w-full p-4 overflow-y-auto flex items-center justify-center">
+  <div class="relative w-full max-w-md max-h-full">
+    <div class="relative bg-white rounded-lg shadow border text-sm">
+      <div class="flex items-center justify-between p-4 border-b rounded-t">
+        <h3 class="text-base font-semibold text-gray-900">Mi perfil</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeProfile()">
+          <span class="sr-only">Cerrar</span>
+          <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-500">DNI:</span>
+          <span class="font-medium text-gray-900">{{ profile().dni || '—' }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Correo:</span>
+          <span class="font-medium text-gray-900">{{ profile().email || '—' }}</span>
+        </div>
+        @if (roleSistema()) {
+          <div class="flex justify-between">
+            <span class="text-gray-500">Rol de sistema:</span>
+            <span class="font-medium text-gray-900">{{ roleSistema() }}</span>
+          </div>
+        }
+      </div>
+      <div class="p-4 flex justify-end">
+        <button type="button" (click)="closeProfile()" class="px-3 py-2 rounded-md border text-sm">Cerrar</button>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -5,9 +5,11 @@ import { AdminUsersComponent } from './users/users.component';
 import { AdminTemplatesComponent } from './templates/templates.component';
 import { AdminPaymentsComponent } from './payments/payments.component';
 import { AdminConsultationsComponent } from './consultations/consultations.component';
+import { AdminHomeComponent } from './home/home.component';
 
 export const adminRoutes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'services' },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: AdminHomeComponent },
   { path: 'services', component: AdminServicesComponent },
   { path: 'medical-roles', component: AdminMedicalRolesComponent },
   { path: 'users', component: AdminUsersComponent },

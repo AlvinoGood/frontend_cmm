@@ -1,104 +1,20 @@
-Collection: Encounters
-
-POST {{BASE_URL}}/medical-center/v1/encounters
-Description: Create an encounter between the authenticated provider and a patient by DNI
-Token: medical
-Authorization: Bearer {{MEDICAL_TOKEN}}
-Content-Type: application/json
-{
-  "patientDni": "12345678"
-}
-
-GET {{BASE_URL}}/medical-center/v1/encounters/me
-Description: List all encounters for the authenticated patient
-Token: user
-Authorization: Bearer {{USER_TOKEN}}
-
-GET {{BASE_URL}}/medical-center/v1/encounters/search/12345678
-Description: Search encounters by patient DNI (for medical/admin)
-Token: medical | admin
-Authorization: Bearer {{MEDICAL_TOKEN}}
-
-
-GET {{BASE_URL}}/medical-center/v1/encounters
-Description: List all encounters (for medical/admin, includes provider and patient details)
-Token: medical | admin
-Authorization: Bearer {{MEDICAL_TOKEN}}
-
----
-
-CREATE TABLE encounters (
-  encounters_id  BIGSERIAL PRIMARY KEY,
-  provider_id    BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE,  
-  patient_id     BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE, 
-  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX encounters_provider_idx ON encounters(provider_id);
-CREATE INDEX encounters_patient_idx  ON encounters(patient_id);
-
----
-
-Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/encounters" with admin token :
+POST {{BASE_URL}}/medical-center/v1/auth/login
 
 {
     "success": true,
     "data": {
-        "total": 2,
-        "items": [
-            {
+        "user": {
+            "id": 4,
+            "dni": "13131313",
+            "email": "testting03@gmail.com",
+            "role": {
                 "id": 2,
-                "provider": {
-                    "id": 4,
-                    "dni": "13131313",
-                    "email": "testting03@gmail.com",
-                    "password": "$2b$10$uj7UIRPyLAcpEUIMpSLzk.9UkFO91GU4zm1/29K3JDxZ01qWSVheW",
-                    "role": {
-                        "id": 2,
-                        "name": "medical"
-                    },
-                    "createdAt": "2025-11-12T20:19:22.810Z"
-                },
-                "patient": {
-                    "id": 3,
-                    "dni": "12121212",
-                    "email": "testting01@gmail.com",
-                    "password": "$2b$10$ylRM6Umw0LTC4gRwb/an4ee9EC1bnvfKawL2Kyk4lMz6EZzZKw01q",
-                    "role": {
-                        "id": 3,
-                        "name": "user"
-                    },
-                    "createdAt": "2025-11-12T20:19:10.688Z"
-                },
-                "createdAt": "2025-11-14T03:00:13.332Z"
+                "name": "medical"
             },
-            {
-                "id": 1,
-                "provider": {
-                    "id": 5,
-                    "dni": "14141414",
-                    "email": "testting04@gmail.com",
-                    "password": "$2b$10$4dbUb95Ok5qc8rXa0ilsQuv1m/utuQxroK5MImO/RVJbVeLs0aWbS",
-                    "role": {
-                        "id": 2,
-                        "name": "medical"
-                    },
-                    "createdAt": "2025-11-12T20:19:35.940Z"
-                },
-                "patient": {
-                    "id": 3,
-                    "dni": "12121212",
-                    "email": "testting01@gmail.com",
-                    "password": "$2b$10$ylRM6Umw0LTC4gRwb/an4ee9EC1bnvfKawL2Kyk4lMz6EZzZKw01q",
-                    "role": {
-                        "id": 3,
-                        "name": "user"
-                    },
-                    "createdAt": "2025-11-12T20:19:10.688Z"
-                },
-                "createdAt": "2025-11-14T02:57:03.889Z"
-            }
-        ]
+            "createdAt": "2025-11-12T20:19:22.810Z"
+        },
+        "accessToken": "...",
+        "refreshToken": "..."
     },
-    "timestamp": "2025-11-14T04:04:32.904Z"
+    "timestamp": "2025-11-14T02:59:53.080Z"
 }

@@ -149,7 +149,6 @@ Description: Delete a medical template by id
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
-
 ==========================================================
 Collection: Medical Roles (Admin)
 
@@ -252,20 +251,20 @@ Content-Type: application/json
   "patientDni": "12345678"
 }
 
-GET {{BASE_URL}}/medical-center/v1/encounters/me?limit=10&offset=0
-Description: List encounters for the authenticated patient
+GET {{BASE_URL}}/medical-center/v1/encounters/me
+Description: List all encounters for the authenticated patient
 Token: user
 Authorization: Bearer {{USER_TOKEN}}
 
-GET {{BASE_URL}}/medical-center/v1/encounters/search?patientDni=12345678&limit=10&offset=0
+GET {{BASE_URL}}/medical-center/v1/encounters/search/12345678
 Description: Search encounters by patient DNI (for medical/admin)
 Token: medical | admin
 Authorization: Bearer {{MEDICAL_TOKEN}}
 
-GET {{BASE_URL}}/medical-center/v1/encounters/1/pdf
-Description: Stream the encounter PDF (owner patient, provider, or admin)
-Token: user (owner) | medical (provider) | admin
-Authorization: Bearer {{USER_TOKEN}}
+GET {{BASE_URL}}/medical-center/v1/encounters
+Description: List all encounters (for medical/admin, includes provider and patient details)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}}
 
 ==========================================================
 Collection: Forms (Clinical)
@@ -368,17 +367,26 @@ Content-Type: application/json
   "serviceId": 1
 }
 
-GET {{BASE_URL}}/medical-center/v1/payments/tickets/me?status=pending&limit=10&offset=0
-Description: List tickets created by current user, filter by status
+GET {{BASE_URL}}/medical-center/v1/payments/tickets/me
+Description: List all tickets created by current user
 Token: user
 Authorization: Bearer {{USER_TOKEN}}
 
-GET {{BASE_URL}}/medical-center/v1/payments/tickets/search?patientDni=12345678&status=pending&limit=10&offset=0
+GET {{BASE_URL}}/medical-center/v1/payments/tickets/patient/12345678
 Description: Search tickets by patient DNI (medical staff)
 Token: medical
 Authorization: Bearer {{MEDICAL_TOKEN}}
 
-GET {{BASE_URL}}/medical-center/v1/payments/tickets?status=pending&limit=10&offset=0
-Description: List all tickets, optionally filtered by status
+GET {{BASE_URL}}/medical-center/v1/payments/tickets
+Description: List all tickets (admin)
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
+
+PATCH {{BASE_URL}}/medical-center/v1/payments/tickets/1/status
+Description: Update ticket status (pending, paid, expired)
+Token: medical
+Authorization: Bearer {{MEDICAL_TOKEN}}
+Content-Type: application/json
+{
+  "status": "paid"
+}
