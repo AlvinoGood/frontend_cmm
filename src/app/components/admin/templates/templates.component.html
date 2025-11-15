@@ -1,51 +1,25 @@
 <section class="p-4">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-gray-900">Plantillas</h2>
-    <button type="button" (click)="openCreate()" class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
+    <button type="button" (click)="openCreate()"
+      class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
       <i class="fa-solid fa-square-plus"></i>
       Nueva plantilla
     </button>
   </div>
 
   <div class="bg-white border rounded-lg p-4">
-    <app-data-table
-      [headers]="headers"
-      [rows]="rows()"
-      [showActions]="true"
-      [total]="total()"
-      [pageIndex]="pageIndex()"
-      [pageSize]="pageSize"
-      [searchTerm]="searchTerm()"
-      (searchChange)="onSearchChange($event)"
-      (pageChange)="onPageChange($event)"
-      (view)="openView($event)"
-      (edit)="openEdit($event)"
-      (delete)="onDelete($event)"
-    ></app-data-table>
+    <app-data-table [headers]="headers" [rows]="rows()" [showActions]="true" [total]="total()" [pageIndex]="pageIndex()"
+      [pageSize]="pageSize" [searchTerm]="searchTerm()" (searchChange)="onSearchChange($event)"
+      (pageChange)="onPageChange($event)" (view)="openView($event)" (edit)="openEdit($event)"
+      (delete)="onDelete($event)"></app-data-table>
   </div>
+
+  <app-pdf-viewer [templateId]="viewing?.id ?? null"></app-pdf-viewer>
 
   <app-template-create-modal [open]="createOpen()" (cancel)="closeCreate()" (save)="saveCreate($event)" />
   <app-template-form-modal [open]="editOpen()" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" />
-  <app-confirm-modal [open]="deleteOpen()" title="Eliminar plantilla" [message]="'¿Eliminar ' + (deleting?.name || '') + ' (' + (deleting?.originalFileName || '') + ')?'" (cancel)="closeDelete()" (confirm)="confirmDelete()" />
-
-  <div [class.hidden]="!viewOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
-    <div class="relative w-full max-w-md max-h-full">
-      <div class="relative bg-white rounded-lg shadow border text-sm">
-        <div class="flex items-center justify-between p-4 border-b rounded-t">
-          <h3 class="text-base font-semibold text-gray-900">Detalle de plantilla</h3>
-          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeView()">
-            <span class="sr-only">Cerrar</span>
-            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-            </svg>
-          </button>
-        </div>
-        <div class="p-4 space-y-2 text-sm">
-          <div class="flex justify-start"><span class="text-gray-500">Nombre: </span><span class="font-medium">{{ viewing?.name }}</span></div>
-          <div class="flex justify-start"><span class="text-gray-500">Archivo: </span><span class="font-medium">{{ viewing?.originalFileName }}</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-confirm-modal [open]="deleteOpen()" title="Eliminar plantilla"
+    [message]="'¿Eliminar ' + (deleting?.name || '') + ' (' + (deleting?.originalFileName || '') + ')?'"
+    (cancel)="closeDelete()" (confirm)="confirmDelete()" />
 </section>
-

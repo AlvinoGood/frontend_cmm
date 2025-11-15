@@ -1,20 +1,121 @@
-POST {{BASE_URL}}/medical-center/v1/auth/login
+GET {{BASE_URL}}/medical-center/v1/medical-templates, with ADMIN token
 
 {
     "success": true,
     "data": {
-        "user": {
-            "id": 4,
-            "dni": "13131313",
-            "email": "testting03@gmail.com",
-            "role": {
-                "id": 2,
-                "name": "medical"
+        "total": 2,
+        "items": [
+            {
+                "id": 1,
+                "name": "cartilla dentista",
+                "filePath": "templates/cartilla-dentista.pdf",
+                "originalFileName": "cartilla-dentista.pdf",
+                "mimeType": "application/pdf",
+                "fileSize": null,
+                "createdAt": "2025-10-18"
             },
-            "createdAt": "2025-11-12T20:19:22.810Z"
-        },
-        "accessToken": "...",
-        "refreshToken": "..."
+            {
+                "id": 2,
+                "name": "cartilla me-ob-ps",
+                "filePath": "templates/cartilla-me-ob-ps.pdf",
+                "originalFileName": "cartilla-me-ob-ps.pdf",
+                "mimeType": "application/pdf",
+                "fileSize": null,
+                "createdAt": "2025-10-18"
+            }
+        ]
     },
-    "timestamp": "2025-11-14T02:59:53.080Z"
+    "timestamp": "2025-11-15T03:08:20.652Z"
 }
+
+
+---
+GET {{BASE_URL}}/medical-center/v1/medical-templates/1, with ADMIN token
+
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "cartilla dentista",
+        "filePath": "templates/cartilla-dentista.pdf",
+        "originalFileName": "cartilla-dentista.pdf",
+        "mimeType": "application/pdf",
+        "fileSize": null,
+        "createdAt": "2025-10-18"
+    },
+    "timestamp": "2025-11-15T03:09:56.100Z"
+}
+
+---
+
+Problema: Previsualización de PDF en módulo "Plantillas" (Admin)
+
+Contexto frontend
+- Pantalla: `AdminTemplatesComponent` (`src/app/components/admin/templates/templates.component.ts` / `.html`).
+- Funcionalidad: botón "Ver" en la tabla de Plantillas abre un modal con detalle de la plantilla y un visor PDF embebido usando `ng2-pdfjs-viewer`.
+- Componente visor: `<ng2-pdfjs-viewer [pdfSrc]="viewUrl">` dentro del modal.
+- Cálculo de URL del PDF en frontend:
+  - API base: `environment.apiUrl = 'http://localhost:3000/medical-center/v1'` (en desarrollo).
+  - De cada item que viene del backend se toma `filePath`, por ejemplo: `"templates/cartilla-dentista.pdf"`.
+  - En `AdminTemplatesComponent` se construye `fileBase` removiendo `/medical-center/v1` de `environment.apiUrl`, quedando `http://localhost:3000`.
+  - Luego para ver un PDF se arma `viewUrl = fileBase + '/' + row.filePath`, por ejemplo: `http://localhost:3000/templates/cartilla-dentista.pdf`.
+
+APIs utilizadas (según api-backend.txt y todo.txt)
+- `GET {{BASE_URL}}/medical-center/v1/medical-templates` -> devuelve lista de plantillas con campos:
+  - `id`, `name`, `filePath`, `originalFileName`, `mimeType`, `fileSize`, `createdAt`.
+- Ejemplo de respuesta guardado en `todo.txt`:
+  - `filePath": "templates/cartilla-dentista.pdf"`.
+
+Comportamiento observado
+- El visor `ng2-pdfjs-viewer` se carga correctamente (la UI de PDF.js aparece dentro del modal).
+- Los assets del visor (`/assets/pdfjs/web/viewer.html`, `locale.json`, etc.) se sirven bien desde Angular (se corrigió `angular.json` para copiar `node_modules/ng2-pdfjs-viewer/pdfjs` a `assets/pdfjs`).
+- Sin embargo, el visor se queda en estado "Loading PDF..." y nunca muestra páginas (0/0).
+- En la consola de red se observa que la URL usada para el archivo es:
+  - `http://localhost:3000/templates/cartilla-dentista.pdf`
+- El mensaje inicial que aparecía fue:
+  - `Request for HTML file "/assets/pdfjs/web/viewer.html?file=http://localhost:3000/templates/cartilla-dentista.pdf&viewerId=..." was received but no asset found.`
+  - Esto ya se solucionó añadiendo la configuración de assets en `angular.json`; ahora el problema es solo con la carga del PDF.
+
+Hipótesis / posibles problemas en backend
+1) Ruta del archivo PDF no expuesta como recurso HTTP estático
+   - `filePath` devuelto por la API es `"templates/cartilla-dentista.pdf"`.
+   - El frontend asume que esa ruta es relativa a `http://localhost:3000/`.
+   - Si el backend no sirve la carpeta `templates` como estática (por ejemplo, si los archivos están fuera de la carpeta pública o con otra ruta), la petición a `http://localhost:3000/templates/cartilla-dentista.pdf` puede estar devolviendo 404 o error interno.
+
+2) Ruta real distinta a la entregada en `filePath`
+   - Es posible que el archivo físico esté en otra ruta (p.ej. `public/templates/...`, `uploads/templates/...` o con un prefijo `/medical-center/files/...`), pero la API solo devuelve `"templates/..."` sin el prefijo correcto.
+   - En ese caso, aunque el archivo exista, la URL construida por el frontend será incorrecta y el visor nunca recibirá el PDF.
+
+3) Problemas de CORS o cabeceras
+   - Si el backend corre en `http://localhost:3000` y el frontend en otro origen (por ejemplo `http://localhost:4200`), es necesario que el endpoint que sirve el PDF permita CORS y devuelva el PDF con `Content-Type: application/pdf`.
+   - Si se bloquea por CORS, el visor tampoco podrá cargarlo.
+
+4) Endpoint de descarga específico no implementado
+   - En `api-backend.txt` existe un patrón para documentos: `GET /medical-center/v1/documents/:id/download`.
+   - Para plantillas médicas no se ve un endpoint equivalente (`/medical-templates/:id/download`); solo se devuelve `filePath` en el listado.
+   - Podría ser más robusto exponer un endpoint de descarga dedicado para plantillas (similar al de `documents`), y que el frontend use esa URL directamente como `pdfSrc`.
+
+Acciones sugeridas para backend
+- Confirmar si la URL `http://localhost:3000/templates/cartilla-dentista.pdf` es accesible directamente desde el navegador:
+  - Si devuelve 404 o error, revisar la configuración de archivos estáticos y/o la ruta real donde se guardan las plantillas.
+  - Alinear el valor de `filePath` que devuelve la API con la ruta real accesible vía HTTP (ej.: incluir prefijo `/templates/` bajo la carpeta estática que esté configurada).
+- Verificar que la respuesta del servidor al servir el PDF tenga:
+  - `Content-Type: application/pdf`
+  - CORS habilitado si el frontend corre en otro origen.
+- (Opcional) Implementar un endpoint `GET /medical-center/v1/medical-templates/:id/download` que devuelva directamente el PDF asociado, y ajustar el frontend para usar esa URL como `pdfSrc` en lugar de construirla manualmente.
+
+Notas
+- Desde el lado frontend, la configuración del visor y de los assets de `ng2-pdfjs-viewer` ya está funcionando correctamente: se ve la interfaz de PDF.js y no hay errores de Angular ni de assets faltantes.
+- El problema actual parece estar exclusivamente en la disponibilidad del PDF en la URL que entrega el backend (o en cómo se construye esa URL a partir de `filePath`).
+
+---
+
+Endpoint implementado
+- GET /medical-center/v1/medical-templates/:id/download
+  - Roles permitidos: admin y medical.
+  - Comportamiento:
+    - Busca la plantilla por id y usa StorageService.stream(filePath) para devolver el PDF con Content-Type application/pdf y Content-Disposition inline.
+
+Uso desde frontend
+- Previsualizar: viewUrl = environment.apiUrl + '/medical-templates/' + row.id + '/download'; usar como pdfSrc en ng2-pdfjs-viewer.
+- Descargar: usar la misma URL en un enlace o window.open(viewUrl).

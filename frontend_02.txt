@@ -29,7 +29,6 @@
 
 * **Inicio** → Dashboard con resumen Cant. de pacientes atentidos en total, Atenciones durante el mes y los 2 ultimos PDF's recientes generados por el mismo. (esto segun su rol de medico) (solo puede ver)
 * **Atenciones** → con boton de "Generar", si el boton es "Generar" entonces se debe redirigir a la interfaz de formulario respecto al medico (correspondiente a la tablas "form_dentist", "form_meobps") para que rellene los datos y envie. (Puede agregar, y ver), Como ultimo paso antes de enviar darle un resumen para confirmar datos correctos y enviar.
-* **Citas** → esta seccion debe tener un "search" para que medico ingrese el DNI del paciente del cual quiere extraer sus informacion, para ellos contara con botones para ver su PDF del paciente buscado. (puede ver incluso si fue otra especialidad quien la atendio), solo puede ver. (puede ver y tener opcion para descargar dicho PDF)
 * **Servicios** → Ver qué servicios están disponibles para su especialidad. (mostrar en una tabla, solo puede ver)
 * **Pagos** → Estado de tickets relacionados al servicios del paciente, para ello contara con un "search"  (solo ver)(la interfaz debe mostrar un search para buscar por el DNI del paciente.
 * **Atendidos** → Acceso rápido a **sus pacientes atendidos por el doctor** (mostrar una interfaz con tablas de 10 en 10, solo puede ver).

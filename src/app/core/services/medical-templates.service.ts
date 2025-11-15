@@ -16,7 +16,7 @@ export class MedicalTemplatesService {
 
   create(form: FormData) {
     return this.http.post(`${this.base}/medical-templates/upload`, form);
-    }
+  }
 
   update(id: number, form: FormData) {
     return this.http.patch(`${this.base}/medical-templates/${id}`, form);
@@ -25,4 +25,15 @@ export class MedicalTemplatesService {
   remove(id: number) {
     return this.http.delete(`${this.base}/medical-templates/${id}`);
   }
+
+
+  getPdf(id: number) {
+  return this.http.get(
+    `${environment.apiUrl}/medical-templates/${id}/download`,
+    {
+      responseType: 'blob',
+    },
+  );
+}
+
 }

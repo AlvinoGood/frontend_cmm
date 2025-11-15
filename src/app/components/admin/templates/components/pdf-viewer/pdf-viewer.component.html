@@ -1,0 +1,24 @@
+<section class="mt-4 bg-white border rounded-lg p-4 flex flex-col h-screen">
+  <h3 class="text-base font-semibold text-gray-900 mb-2">
+    Previsualización de plantilla
+  </h3>
+
+  @if (!templateId) {
+    <p class="text-gray-500 text-sm">
+      Seleccionar alguna plantilla para previsualizar.
+    </p>
+  } @else {
+    @if (loading()) {
+      <p class="text-gray-500 text-sm mb-2">Cargando PDF...</p>
+    }
+
+    <ng2-pdfjs-viewer
+      #pdfViewer
+      class="w-full flex-1 mt-2"
+      [urlValidation]="false"
+      [showOpenFile]="false"
+      [showViewBookmark]="false"
+      (onDocumentLoad)="onPdfLoaded()"
+    ></ng2-pdfjs-viewer>
+  }
+</section>

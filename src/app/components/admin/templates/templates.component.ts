@@ -6,11 +6,12 @@ import { MedicalTemplatesService } from '../../../core/services/medical-template
 import { AlertService } from '../../../core/services/alert.service';
 import { TemplateCreateModalComponent } from './components/template-create-modal/template-create-modal.component';
 import { TemplateFormModalComponent } from './components/template-form-modal/template-form-modal.component';
-
+import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
 @Component({
   selector: 'app-admin-templates',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ConfirmModalComponent, TemplateCreateModalComponent, TemplateFormModalComponent],
+  imports: [CommonModule, DataTableComponent, ConfirmModalComponent, TemplateCreateModalComponent, TemplateFormModalComponent, PdfViewerComponent
+  ],
   templateUrl: './templates.component.html',
   styleUrl: './templates.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,15 +34,17 @@ export class AdminTemplatesComponent implements OnInit {
   createOpen = signal(false);
   editOpen = signal(false);
   deleteOpen = signal(false);
-  viewOpen = signal(false);
 
   editing: any | null = null;
   deleting: any | null = null;
   viewing: any | null = null;
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+  }
 
   private allItems: any[] = [];
+
   private load(): void {
     this.svc.list().subscribe((items) => {
       const normalized = (items ?? []).map((t: any) => ({
@@ -60,9 +63,9 @@ export class AdminTemplatesComponent implements OnInit {
     const term = this.searchTerm().toLowerCase();
     const filtered = term
       ? this.allItems.filter((r) =>
-          String(r.name).toLowerCase().includes(term) ||
-          String(r.originalFileName).toLowerCase().includes(term)
-        )
+        String(r.name).toLowerCase().includes(term) ||
+        String(r.originalFileName).toLowerCase().includes(term)
+      )
       : this.allItems;
     const start = this.pageIndex() * this.pageSize;
     this.rows.set(filtered.slice(start, start + this.pageSize));
@@ -74,6 +77,7 @@ export class AdminTemplatesComponent implements OnInit {
 
   openCreate() { this.createOpen.set(true); }
   closeCreate() { this.createOpen.set(false); }
+
   saveCreate(form: FormData) {
     this.svc.create(form).subscribe({
       next: () => { this.alerts.success('Plantilla creada'); this.closeCreate(); this.load(); },
@@ -101,7 +105,14 @@ export class AdminTemplatesComponent implements OnInit {
     });
   }
 
-  openView(row: any) { this.viewing = row; this.viewOpen.set(true); }
-  closeView() { this.viewOpen.set(false); this.viewing = null; }
-}
+  openView(row: any) {
+    this.viewing = row;
 
+    if (!row?.id) {
+      this.alerts.error('Plantilla inválida');
+      return;
+    }
+
+
+  }
+}
