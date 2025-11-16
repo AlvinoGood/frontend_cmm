@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild, inject, ChangeDetectorRef } from '@angular/core';
 import { PdfJsViewerModule, PdfJsViewerComponent } from 'ng2-pdfjs-viewer';
 import { MedicalTemplatesService } from '../../../../../core/services/medical-templates.service';
 
@@ -20,6 +20,7 @@ export class PdfViewerComponent implements OnChanges {
   pdfSrc: Blob | null = null;
 
   private readonly pdfService = inject(MedicalTemplatesService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('templateId' in changes) {
@@ -42,12 +43,14 @@ private loadPdf(id: number): void {
       next: (blob) => {
         this.pdfSrc = blob;   
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error al cargar PDF', err);
         this.loading = false;
         this.error = 'No se pudo cargar el PDF.';
         this.pdfSrc = null;
+        this.cdr.markForCheck();
       }
     });
   }
