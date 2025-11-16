@@ -1,0 +1,46 @@
+<section class="p-4">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Servicios</h2>
+    <!-- Médico NO puede crear servicios: no se muestra botón de crear -->
+  </div>
+
+  <div class="bg-white border rounded-lg p-4">
+    <app-data-table
+      [headers]="headers"
+      [rows]="rows()"
+      [showActions]="true"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize"
+      [searchTerm]="searchTerm()"
+      (searchChange)="onSearchChange($event)"
+      (pageChange)="onPageChange($event)"
+      (view)="openView($event)"
+    ></app-data-table>
+  </div>
+
+  <!-- Modal de detalle (solo lectura) -->
+  <div id="modal-view-service" [class.hidden]="!viewOpen()" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Detalle de servicio</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeView()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-2 text-sm">
+          <div class="flex justify-start"><span class="text-gray-500">Nombre: </span><span class="font-medium">{{ viewing?.name }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">Código: </span><span class="font-medium">{{ viewing?.code }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">Precio: </span><span class="font-medium">{{ viewing?.price }}</span></div>
+          <div class="flex justify-start"><span class="text-gray-500">Especialidad: </span><span class="font-medium">{{ viewing?.specialty }}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
