@@ -1,24 +1,35 @@
 <section class="mt-4 bg-white border rounded-lg p-4 flex flex-col h-screen">
-  <h3 class="text-base font-semibold text-gray-900 mb-2">
-    Previsualización de plantilla
-  </h3>
+  <header class="mb-3">
+    <h2 class="text-base font-medium text-gray-800">Visor de documento</h2>
+  </header>
 
-  @if (!templateId) {
-    <p class="text-gray-500 text-sm">
-      Seleccionar alguna plantilla para previsualizar.
-    </p>
-  } @else {
-    @if (loading()) {
-      <p class="text-gray-500 text-sm mb-2">Cargando PDF...</p>
+  <main class="flex-1 min-h-0 overflow-hidden">
+    @if (!templateId) {
+    <div class="h-full grid place-items-center text-gray-500 text-sm">
+      Selecciona una plantilla para visualizar su PDF.
+    </div>
+    } @else {
+    <div class="h-full flex flex-col min-h-0">
+      @if (loading) {
+      <div class="flex-1 grid place-items-center text-gray-500 text-sm">
+        Cargando PDF...
+      </div>
+      }
+
+      @if (error) {
+      <div class="flex-1 grid place-items-center text-red-600 text-sm">
+        {{ error }}
+      </div>
+      }
+
+      @if (pdfSrc) {
+      <div class="pdf-wrapper flex-1 min-h-0">
+        <ng2-pdfjs-viewer class="h-full w-full block" [pdfSrc]="pdfSrc" [viewerId]="'medical-template-viewer'" [showSpinner]="true" [theme]="'dark'">
+        </ng2-pdfjs-viewer>
+      </div>
+      }
+    </div>
     }
+  </main>
 
-    <ng2-pdfjs-viewer
-      #pdfViewer
-      class="w-full flex-1 mt-2"
-      [urlValidation]="false"
-      [showOpenFile]="false"
-      [showViewBookmark]="false"
-      (onDocumentLoad)="onPdfLoaded()"
-    ></ng2-pdfjs-viewer>
-  }
 </section>

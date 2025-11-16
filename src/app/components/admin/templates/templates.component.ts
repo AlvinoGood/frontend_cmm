@@ -106,13 +106,11 @@ export class AdminTemplatesComponent implements OnInit {
   }
 
   openView(row: any) {
-    this.viewing = row;
-
     if (!row?.id) {
       this.alerts.error('Plantilla inválida');
       return;
     }
 
-
+    this.viewing = row;
   }
 }
