@@ -7,6 +7,7 @@ import { ServicesService } from '../../../core/services/services.service';
 import { ServiceFormModalComponent, ServiceFormValue } from './components/service-form-modal/service-form-modal.component';
 import { ServiceCreateModalComponent, ServiceCreateValue } from './components/service-create-modal/service-create-modal.component';
 import { AlertService } from '../../../core/services/alert.service';
+import { PaymentsService } from '../../../core/services/payments.service';
 import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-modal/confirm-modal.component';
 
 @Component({
@@ -21,6 +22,7 @@ export class AdminServicesComponent implements OnInit {
   private readonly svc = inject(ServicesService);
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
+  private readonly payments = inject(PaymentsService);
 
   headers: DataTableHeader[] = [
     { label: 'Nombre', key: 'name' },
@@ -45,6 +47,12 @@ export class AdminServicesComponent implements OnInit {
   private readonly alerts = inject(AlertService);
 
   canManage: boolean = true;
+  canBuy: boolean = false;
+  buyOpen = signal(false);
+  buyInfoOpen = signal(false);
+  buying: any | null = null;
+  userDni: string | null = null;
+  userEmail: string | null = null;
 
   ngOnInit(): void {
 
@@ -56,6 +64,9 @@ export class AdminServicesComponent implements OnInit {
     const routeAllows = (data && typeof data.canManage !== 'undefined') ? !!data.canManage : true;
 
     this.canManage = isAdmin && routeAllows;
+    this.canBuy = role === 'user';
+    this.userDni = (profile as any)?.dni ?? null;
+    this.userEmail = (profile as any)?.email ?? null;
     this.load();
   }
 
@@ -163,4 +174,15 @@ export class AdminServicesComponent implements OnInit {
       error: () => this.alerts.error('No se pudo eliminar'),
     });
   }
+
+  onBuy(row: any) { if (!this.canBuy) return; this.buying = row; this.buyOpen.set(true); }
+  closeBuy() { this.buyOpen.set(false); this.buying = null; }
+  confirmBuy() {
+    if (!this.buying?.id) return;
+    this.payments.createTicket(this.buying.id).subscribe({
+      next: () => { this.closeBuy(); this.buyInfoOpen.set(true); },
+      error: () => this.alerts.error('No se pudo crear el ticket'),
+    });
+  }
+  closeBuyInfo() { this.buyInfoOpen.set(false); }
 }

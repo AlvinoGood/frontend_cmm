@@ -4,12 +4,12 @@ import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class PaymentsService {
+export class MedicalCardsService {
   private readonly http = inject(HttpClient);
   private get base() { return environment.apiUrl; }
 
-  listTickets() {
-    return this.http.get<any>(`${this.base}/payments/tickets`).pipe(
+  listMine() {
+    return this.http.get<any>(`${this.base}/medical-cards/me`).pipe(
       map((r) => {
         const items = r?.data?.items ?? r?.items ?? r?.results ?? [];
         const total = r?.data?.total ?? r?.total ?? items.length;
@@ -18,11 +18,8 @@ export class PaymentsService {
     );
   }
 
-  updateTicketStatus(id: number, status: 'pending' | 'paid' | 'expired') {
-    return this.http.patch(`${this.base}/payments/tickets/${id}/status`, { status });
-  }
-
-  createTicket(serviceId: number) {
-    return this.http.post(`${this.base}/payments/tickets`, { serviceId });
+  create(body: any) {
+    return this.http.post(`${this.base}/medical-cards`, body);
   }
 }
+

@@ -16,6 +16,7 @@
       [showView]="true"
       [showEdit]="canManage"
       [showDelete]="canManage"
+      [showBuy]="canBuy"
       [total]="total()"
       [pageIndex]="pageIndex()"
       [pageSize]="pageSize"
@@ -25,9 +26,64 @@
       (view)="openView($event)"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)"
+      (buy)="onBuy($event)"
     ></app-data-table>
   </div>
 
+  @if (canBuy && buyOpen()) {
+    <div class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+      <div class="relative w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow border text-sm">
+          <div class="flex items-center justify-between p-4 border-b rounded-t">
+            <h3 class="text-base font-semibold text-gray-900">Confirmar compra</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeBuy()">
+              <span class="sr-only">Cerrar</span>
+              <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 space-y-2 text-sm">
+            <div class="font-medium text-gray-900">Boleta</div>
+            <div class="flex justify-between"><span class="text-gray-500">Servicio:</span><span class="font-medium">{{ buying?.name }}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Código:</span><span class="font-medium">{{ buying?.code }}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Precio:</span><span class="font-medium">{{ buying?.price }}</span></div>
+            <div class="h-px bg-gray-200 my-2"></div>
+            <div class="flex justify-between"><span class="text-gray-500">DNI:</span><span class="font-medium">{{ userDni }}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Email:</span><span class="font-medium">{{ userEmail }}</span></div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button type="button" (click)="closeBuy()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+              <button type="button" (click)="confirmBuy()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (canBuy && buyInfoOpen()) {
+    <div class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+      <div class="relative w-full max-w-sm max-h-full">
+        <div class="relative bg-white rounded-lg shadow border text-sm">
+          <div class="flex items-center justify-between p-4 border-b rounded-t">
+            <h3 class="text-base font-semibold text-gray-900">Solicitud registrada</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeBuyInfo()">
+              <span class="sr-only">Cerrar</span>
+              <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 text-sm">
+            <p>Revisar en Pagos para ver el proceso de tu solicitud.</p>
+            <div class="flex items-center justify-end gap-2 pt-4">
+              <button type="button" (click)="closeBuyInfo()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Entendido</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
   @if (canManage && createOpen()) { <app-service-create-modal modalId="modal-create-service" [open]="true" title="Crear servicio" (cancel)="closeCreate()" (save)="saveCreate($event)" /> }
   @if (canManage && editOpen()) { <app-service-form-modal modalId="modal-edit-service" [open]="true" title="Editar servicio" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" /> }
   <app-confirm-modal [open]="deleteOpen()" title="Eliminar servicio" [message]="'¿Eliminar ' + (deleting?.name || '') + ' (' + (deleting?.code || '') + ')? Esta acción no se puede deshacer.'" (cancel)="closeDelete()" (confirm)="confirmDelete()" />

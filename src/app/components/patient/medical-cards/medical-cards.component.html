@@ -1,0 +1,99 @@
+<section class="min-h-screen grid grid-rows-2">
+  <div class="row-span-1 grid place-items-center bg-white">
+    <button type="button" (click)="openCreate()" class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-4 py-3 text-base">
+      <i class="fa-solid fa-id-card"></i>
+      Solicitar mi Tarjeta Medica
+    </button>
+  </div>
+
+  <div class="row-span-1 p-4">
+    @if (loading()) {
+      <div class="h-full grid place-items-center text-gray-500">Cargando tarjetas...</div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (c of rows(); track c.id) {
+          <div class="rounded-xl border bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-sm font-medium text-gray-700">Tarjeta médica</div>
+              <span class="text-xs px-2 py-1 rounded-full border" [class.text-green-700]="c.status === 'approved'" [class.text-yellow-700]="c.status === 'pending'" [class.text-red-700]="c.status === 'expired'">{{ c.status }}</span>
+            </div>
+            <div class="text-sm space-y-1">
+              <div class="flex justify-between"><span class="text-gray-500">Fecha de Atención</span><span class="font-medium">{{ (c.careDate || '').slice(0,10) }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Fecha de Vencimiento</span><span class="font-medium">{{ (c.expirationDate || '').slice(0,10) }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Usuario</span><span class="font-medium">{{ c.ownerDni }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Email</span><span class="font-medium">{{ c.ownerEmail }}</span></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (topOpen()) {
+    <div class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+      <div class="relative w-full max-w-2xl max-h-full">
+        <div class="relative bg-white rounded-lg shadow border text-sm">
+          <div class="flex items-center justify-between p-4 border-b rounded-t">
+            <h3 class="text-base font-semibold text-gray-900">Solicitud de Tarjeta Médica</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeCreate()">
+              <span class="sr-only">Cerrar</span>
+              <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-4">
+            <form class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Edad</label>
+                <input type="number" formControlName="age" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Estado civil</label>
+                <input type="text" formControlName="maritalStatus" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Grado de Instrucción</label>
+                <input type="text" formControlName="levelEducation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Lugar de trabajo</label>
+                <input type="text" formControlName="workPlace" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Área</label>
+                <input type="text" formControlName="area" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Grupo sanguíneo</label>
+                <input type="text" formControlName="bloodGroup" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Historia clínica</label>
+                <input formControlName="clinicalHistory" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"/>
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Resultado de heces</label>
+                <input type="text" formControlName="resultStool" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Fecha de atención</label>
+                <input type="datetime-local" formControlName="careDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900">Fecha de vencimiento</label>
+                <input type="datetime-local" formControlName="expirationDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+              </div>
+              <div class="sm:col-span-2 flex items-center justify-end gap-2 pt-2">
+                <button type="button" (click)="closeCreate()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+                <button type="submit" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm" [disabled]="form.invalid">Confirmar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</section>
+
+

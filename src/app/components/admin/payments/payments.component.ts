@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { PaymentsService } from '../../../core/services/payments.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-admin-payments',
@@ -14,6 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class AdminPaymentsComponent implements OnInit {
   private readonly svc = inject(PaymentsService);
   private readonly auth = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
 
   rows = signal<any[]>([]);
   total = signal(0);
@@ -27,6 +29,8 @@ export class AdminPaymentsComponent implements OnInit {
   selectedTicketId: number | null = null;
   selectedStatus: 'pending' | 'paid' | 'expired' = 'pending';
   canChangeStatus = false;
+  onlyMine = false;
+  userDni: string | null = null;
 
   private items: any[] = [];
   private searchTimer: any;
@@ -35,6 +39,9 @@ export class AdminPaymentsComponent implements OnInit {
     const profile: any = this.auth.session().profile;
     const role: string | undefined = profile?.sys_role || profile?.role;
     this.canChangeStatus = role === 'medical';
+    this.userDni = profile?.dni ?? null;
+    const data = this.route.snapshot.data as any;
+    this.onlyMine = !!data?.onlyMine || role === 'user';
 
     this.svc.listTickets().subscribe(({ items, total }) => {
       const normalized = items.map((t: any) => ({
@@ -47,8 +54,11 @@ export class AdminPaymentsComponent implements OnInit {
         status: t.status,
         raw: t,
       }));
-      this.items = normalized;
-      this.total.set(total);
+      const mine = (this.onlyMine && this.userDni)
+        ? normalized.filter((r) => r.userDni === this.userDni)
+        : normalized;
+      this.items = mine;
+      this.total.set(mine.length);
       this.applyFilterPage();
     });
   }

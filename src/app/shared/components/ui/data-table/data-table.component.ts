@@ -23,6 +23,7 @@ export class DataTableComponent {
   @Input() showView = true;
   @Input() showEdit = true;
   @Input() showDelete = true;
+  @Input() showBuy = false;
 
   // Search & pagination (headless)
   @Input() total = 0;
@@ -38,6 +39,7 @@ export class DataTableComponent {
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() promote = new EventEmitter<any>();
+  @Output() buy = new EventEmitter<any>();
 
   private searchTimer: any;
   onSearchInput(ev: Event) {

@@ -350,8 +350,8 @@ Content-Type: application/json
   "resultStool": "Normal"
 }
 
-GET {{BASE_URL}}/medical-center/v1/medical-cards/me?limit=10&offset=0
-Description: List medical cards owned by current user
+GET {{BASE_URL}}/medical-center/v1/medical-cards/me
+Description: List all medical cards owned by current user
 Token: user
 Authorization: Bearer {{USER_TOKEN}}
 

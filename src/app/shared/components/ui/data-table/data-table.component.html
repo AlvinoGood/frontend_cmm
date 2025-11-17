@@ -49,6 +49,12 @@
                 <i class="fa-solid fa-trash text-red-700 text-sm"></i>
               </button>
               }
+              @if (showBuy) {
+                <button type="button" class="px-2 py-1 rounded border text-xs flex items-center gap-1" title="Comprar" (click)="buy.emit(r)">
+                  <i class="fa-solid fa-cart-shopping text-sm"></i>
+                  <span>Comprar</span>
+                </button>
+              }
               @if (showPromote) {
                 <button type="button" class="bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200 rounded w-8 h-8 flex items-center justify-center" title="Promover a médico" (click)="promote.emit(r)">
                   <i class="fa-solid fa-user-doctor text-blue-700 text-sm"></i>
