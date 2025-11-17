@@ -115,6 +115,11 @@ Description: Get medical template by id
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
+GET {{BASE_URL}}/medical-center/v1/medical-templates/1/download
+Description: Download or view the medical template PDF
+Token: admin
+Authorization: Bearer {{ADMIN_TOKEN}}
+
 POST {{BASE_URL}}/medical-center/v1/medical-templates
 Description: Create a medical template (file metadata JSON)
 Token: admin
@@ -378,9 +383,9 @@ Token: medical
 Authorization: Bearer {{MEDICAL_TOKEN}}
 
 GET {{BASE_URL}}/medical-center/v1/payments/tickets
-Description: List all tickets (admin)
-Token: admin
-Authorization: Bearer {{ADMIN_TOKEN}}
+Description: List all tickets (admin | medical)
+Token: admin | medical | user
+Authorization: Bearer {{ADMIN_TOKEN}} or {{MEDICAL_TOKEN}} or {{USER_TOKEN}}
 
 PATCH {{BASE_URL}}/medical-center/v1/payments/tickets/1/status
 Description: Update ticket status (pending, paid, expired)

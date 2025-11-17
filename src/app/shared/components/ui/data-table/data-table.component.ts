@@ -20,6 +20,9 @@ export class DataTableComponent {
   @Input() rows: any[] = [];
   @Input() showActions = false;
   @Input() showPromote = false;
+  @Input() showView = true;
+  @Input() showEdit = true;
+  @Input() showDelete = true;
 
   // Search & pagination (headless)
   @Input() total = 0;

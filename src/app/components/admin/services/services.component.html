@@ -1,16 +1,21 @@
 <section class="p-4">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-gray-900">Servicios</h2>
-    <button type="button" (click)="openCreate()" class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
-      <i class="fa-solid fa-square-plus"></i>
-      Nuevo servicio
-    </button>
+    @if (canManage) {
+      <button type="button" (click)="openCreate()" class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
+        <i class="fa-solid fa-square-plus"></i>
+        Nuevo servicio
+      </button>
+    }
   </div>
   <div class="bg-white border rounded-lg p-4">
     <app-data-table
       [headers]="headers"
       [rows]="rows()"
       [showActions]="true"
+      [showView]="true"
+      [showEdit]="canManage"
+      [showDelete]="canManage"
       [total]="total()"
       [pageIndex]="pageIndex()"
       [pageSize]="pageSize"
@@ -23,8 +28,8 @@
     ></app-data-table>
   </div>
 
-  <app-service-create-modal modalId="modal-create-service" [open]="createOpen()" title="Crear servicio" (cancel)="closeCreate()" (save)="saveCreate($event)" />
-  <app-service-form-modal modalId="modal-edit-service" [open]="editOpen()" title="Editar servicio" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" />
+  @if (canManage && createOpen()) { <app-service-create-modal modalId="modal-create-service" [open]="true" title="Crear servicio" (cancel)="closeCreate()" (save)="saveCreate($event)" /> }
+  @if (canManage && editOpen()) { <app-service-form-modal modalId="modal-edit-service" [open]="true" title="Editar servicio" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" /> }
   <app-confirm-modal [open]="deleteOpen()" title="Eliminar servicio" [message]="'¿Eliminar ' + (deleting?.name || '') + ' (' + (deleting?.code || '') + ')? Esta acción no se puede deshacer.'" (cancel)="closeDelete()" (confirm)="confirmDelete()" />
 
   

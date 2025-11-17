@@ -17,5 +17,8 @@ export class PaymentsService {
       })
     );
   }
-}
 
+  updateTicketStatus(id: number, status: 'pending' | 'paid' | 'expired') {
+    return this.http.patch(`${this.base}/payments/tickets/${id}/status`, { status });
+  }
+}

@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { AuthService } from '../../../core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DataTableComponent, DataTableHeader } from '../../../shared/components/ui/data-table/data-table.component';
 import { ServicesService } from '../../../core/services/services.service';
@@ -17,6 +19,8 @@ import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-mod
 })
 export class AdminServicesComponent implements OnInit {
   private readonly svc = inject(ServicesService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly auth = inject(AuthService);
 
   headers: DataTableHeader[] = [
     { label: 'Nombre', key: 'name' },
@@ -26,7 +30,7 @@ export class AdminServicesComponent implements OnInit {
   ];
 
   rows = signal<any[]>([]);
-  // Estado de tabla headless
+
   pageSize = 10;
   pageIndex = signal(0);
   searchTerm = signal('');
@@ -40,7 +44,18 @@ export class AdminServicesComponent implements OnInit {
   viewing: any | null = null;
   private readonly alerts = inject(AlertService);
 
+  canManage: boolean = true;
+
   ngOnInit(): void {
+
+    const profile: any = this.auth.session().profile;
+    const role: string | undefined = profile?.sys_role || profile?.role;
+    const isAdmin = role === 'admin';
+
+    const data = this.route.snapshot.data as any;
+    const routeAllows = (data && typeof data.canManage !== 'undefined') ? !!data.canManage : true;
+
+    this.canManage = isAdmin && routeAllows;
     this.load();
   }
 
@@ -77,7 +92,7 @@ export class AdminServicesComponent implements OnInit {
     });
   }
 
-  // Handlers headless
+
   onSearchChange(term: string) {
     this.searchTerm.set(term.trim());
     this.pageIndex.set(0);

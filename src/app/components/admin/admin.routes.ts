@@ -10,7 +10,7 @@ import { AdminHomeComponent } from './home/home.component';
 export const adminRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'home', component: AdminHomeComponent },
-  { path: 'services', component: AdminServicesComponent },
+  { path: 'services', component: AdminServicesComponent, data: { canManage: true } },
   { path: 'medical-roles', component: AdminMedicalRolesComponent },
   { path: 'users', component: AdminUsersComponent },
   { path: 'payments', component: AdminPaymentsComponent },

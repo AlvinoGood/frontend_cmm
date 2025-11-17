@@ -34,23 +34,40 @@
                 <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.serviceCode }}</td>
                 <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.servicePrice }}</td>
                 <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">
-                  @if (r.status === 'pending') {
-                    <span class="flex items-center gap-2">
-                      <p>Pendiente</p>
-                      <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
-                    </span>
-                  } @else if (r.status === 'paid') {
-                    <span class="flex items-center gap-2">
-                      <p>Pagado</p>
-                      <i class="fa-solid fa-circle-check text-green-500"></i>
-                    </span>
-                  } @else if (r.status === 'expired') {
-                    <span class="flex items-center gap-2">
-                      <p>Expirado</p>
-                      <i class="fa-solid fa-circle-xmark text-red-500"></i>
-                    </span>
+                  @if (canChangeStatus) {
+                    <button type="button" class="px-2 py-1 rounded border flex items-center gap-2" (click)="openStatus(r)">
+                      @if (r.status === 'pending') {
+                        <span>Pendiente</span>
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                      } @else if (r.status === 'paid') {
+                        <span>Pagado</span>
+                        <i class="fa-solid fa-circle-check text-green-500"></i>
+                      } @else if (r.status === 'expired') {
+                        <span>Expirado</span>
+                        <i class="fa-solid fa-circle-xmark text-red-500"></i>
+                      } @else {
+                        <span class="text-gray-400 text-xs">{{ r.status || '-' }}</span>
+                      }
+                    </button>
                   } @else {
-                    <span class="text-gray-400 text-xs">{{ r.status || '—' }}</span>
+                    @if (r.status === 'pending') {
+                      <span class="flex items-center gap-2">
+                        <p>Pendiente</p>
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                      </span>
+                    } @else if (r.status === 'paid') {
+                      <span class="flex items-center gap-2">
+                        <p>Pagado</p>
+                        <i class="fa-solid fa-circle-check text-green-500"></i>
+                      </span>
+                    } @else if (r.status === 'expired') {
+                      <span class="flex items-center gap-2">
+                        <p>Expirado</p>
+                        <i class="fa-solid fa-circle-xmark text-red-500"></i>
+                      </span>
+                    } @else {
+                      <span class="text-gray-400 text-xs">{{ r.status || '-' }}</span>
+                    }
                   }
                 </td>
                 <td class="whitespace-nowrap py-2 px-2">
@@ -97,8 +114,34 @@
       </div>
     </div>
   </div>
+
+  <div [class.hidden]="!statusOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-sm max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Cambiar estado</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeStatus()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-3">
+          <label class="block mb-1 text-sm font-medium text-gray-900">Estado</label>
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" [value]="selectedStatus" (change)="onStatusSelect($event)">
+            <option value="pending">Pendiente</option>
+            <option value="paid">Pagado</option>
+            <option value="expired">Expirado</option>
+          </select>
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" (click)="closeStatus()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="button" (click)="confirmStatus()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
-
-
 
 

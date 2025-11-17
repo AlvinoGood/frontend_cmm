@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaymentsService } from '../../../core/services/payments.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-payments',
@@ -12,6 +13,7 @@ import { PaymentsService } from '../../../core/services/payments.service';
 })
 export class AdminPaymentsComponent implements OnInit {
   private readonly svc = inject(PaymentsService);
+  private readonly auth = inject(AuthService);
 
   rows = signal<any[]>([]);
   total = signal(0);
@@ -21,11 +23,19 @@ export class AdminPaymentsComponent implements OnInit {
 
   viewOpen = signal(false);
   viewing: any | null = null;
+  statusOpen = signal(false);
+  selectedTicketId: number | null = null;
+  selectedStatus: 'pending' | 'paid' | 'expired' = 'pending';
+  canChangeStatus = false;
 
   private items: any[] = [];
   private searchTimer: any;
 
   ngOnInit(): void {
+    const profile: any = this.auth.session().profile;
+    const role: string | undefined = profile?.sys_role || profile?.role;
+    this.canChangeStatus = role === 'medical';
+
     this.svc.listTickets().subscribe(({ items, total }) => {
       const normalized = items.map((t: any) => ({
         id: t.id,
@@ -86,5 +96,36 @@ export class AdminPaymentsComponent implements OnInit {
   closeView() {
     this.viewOpen.set(false);
     this.viewing = null;
+  }
+
+  openStatus(row: any) {
+    if (!this.canChangeStatus) return;
+    this.selectedTicketId = row?.id ?? null;
+    this.selectedStatus = (row?.status as any) ?? 'pending';
+    this.statusOpen.set(true);
+  }
+
+  closeStatus() {
+    this.statusOpen.set(false);
+    this.selectedTicketId = null;
+  }
+
+  onStatusSelect(ev: Event) {
+    const v = (ev.target as HTMLSelectElement)?.value as any;
+    if (v === 'pending' || v === 'paid' || v === 'expired') this.selectedStatus = v;
+  }
+
+  confirmStatus() {
+    if (!this.selectedTicketId) return;
+    this.svc.updateTicketStatus(this.selectedTicketId, this.selectedStatus).subscribe({
+      next: () => {
+        this.items = this.items.map((it) => it.id === this.selectedTicketId ? { ...it, status: this.selectedStatus } : it);
+        this.applyFilterPage();
+        this.closeStatus();
+      },
+      error: () => {
+        this.closeStatus();
+      }
+    });
   }
 }
