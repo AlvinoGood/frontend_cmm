@@ -10,24 +10,91 @@
     @if (loading()) {
       <div class="h-full grid place-items-center text-gray-500">Cargando tarjetas...</div>
     } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <p class="text-black font-bold mb-2 w-full text-center">Mis Tarjetas Médicas</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @for (c of rows(); track c.id) {
-          <div class="rounded-xl border bg-white shadow-sm p-4">
-            <div class="flex items-center justify-between mb-2">
+          <div class="relative overflow-hidden rounded-2xl border shadow-md group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5" (click)="openView(c)">
+            <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-cover bg-center opacity-40 group-hover:opacity-20 transition-opacity"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/60 to-white/50"></div>
+            <div class="relative p-5">
+            <div class="flex items-center justify-between mb-3">
               <div class="text-sm font-medium text-gray-700">Tarjeta médica</div>
-              <span class="text-xs px-2 py-1 rounded-full border" [class.text-green-700]="c.status === 'approved'" [class.text-yellow-700]="c.status === 'pending'" [class.text-red-700]="c.status === 'expired'">{{ c.status }}</span>
+              <span class="text-xs px-2 py-1 rounded-full border bg-white/60" [class.text-green-700]="isPaid(c.status)" [class.text-yellow-700]="isPending(c.status)" [class.text-red-700]="c.status === 'expired'">{{ statusLabel(c.status) }}</span>
             </div>
             <div class="text-sm space-y-1">
               <div class="flex justify-between"><span class="text-gray-500">Fecha de Atención</span><span class="font-medium">{{ (c.careDate || '').slice(0,10) }}</span></div>
               <div class="flex justify-between"><span class="text-gray-500">Fecha de Vencimiento</span><span class="font-medium">{{ (c.expirationDate || '').slice(0,10) }}</span></div>
-              <div class="flex justify-between"><span class="text-gray-500">Usuario</span><span class="font-medium">{{ c.ownerDni }}</span></div>
-              <div class="flex justify-between"><span class="text-gray-500">Email</span><span class="font-medium">{{ c.ownerEmail }}</span></div>
+              @if (isPaid(c.status)) {
+                <div class="flex justify-between"><span class="text-gray-500">Usuario</span><span class="font-medium">{{ c.ownerDni }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Email</span><span class="font-medium">{{ c.ownerEmail }}</span></div>
+              }
+              <div class="border-t border-gray-200 my-2"></div>
+              <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                <div class="flex justify-between"><span class="text-gray-500">Edad</span><span class="font-medium">{{ c.age }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Estado civil</span><span class="font-medium">{{ c.maritalStatus }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Grado de instrucción</span><span class="font-medium">{{ c.levelEducation }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Lugar de trabajo</span><span class="font-medium">{{ c.workPlace }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Área</span><span class="font-medium">{{ c.area }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Grupo sanguíneo</span><span class="font-medium">{{ c.bloodGroup }}</span></div>
+                <div class="col-span-2 flex justify-between">
+                  <span class="text-gray-500">Historia clínica</span>
+                  <span class="font-medium text-right truncate max-w-[14rem]" title="{{ c.clinicalHistory }}">{{ c.clinicalHistory }}</span>
+                </div>
+              </div>
             </div>
+          </div>
           </div>
         }
       </div>
     }
   </div>
+
+  @if (selected()) {
+    <div class="fixed inset-0 z-[1150] w-full p-4 overflow-y-auto flex items-center justify-center bg-black/40" (click)="closeView()">
+      <div class="relative w-full max-w-3xl" (click)="$event.stopPropagation()">
+        <div class="relative overflow-hidden rounded-2xl shadow-xl border bg-white">
+          <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-cover bg-center opacity-10"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-white/75 via-white/60 to-white/50"></div>
+          <div class="relative p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">Tarjeta Médica</h3>
+              <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeView()">
+                <span class="sr-only">Cerrar</span>
+                <svg class="w-5 h-5" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">Fecha de Atención</span><span class="font-medium">{{ (selected()?.careDate || '').slice(0,10) }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Fecha de Vencimiento</span><span class="font-medium">{{ (selected()?.expirationDate || '').slice(0,10) }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Estado</span><span class="font-medium">{{ statusLabel(selected()?.status) }}</span></div>
+              @if (isPaid(selected()?.status)) {
+                <div class="flex justify-between"><span class="text-gray-500">Usuario</span><span class="font-medium">{{ selected()?.ownerDni }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Email</span><span class="font-medium">{{ selected()?.ownerEmail }}</span></div>
+              }
+            </div>
+            <div class="border-t border-gray-200 my-4"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">Edad</span><span class="font-medium">{{ selected()?.age }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Estado civil</span><span class="font-medium">{{ selected()?.maritalStatus }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Grado de instrucción</span><span class="font-medium">{{ selected()?.levelEducation }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Lugar de trabajo</span><span class="font-medium">{{ selected()?.workPlace }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Área</span><span class="font-medium">{{ selected()?.area }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Grupo sanguíneo</span><span class="font-medium">{{ selected()?.bloodGroup }}</span></div>
+              <div class="sm:col-span-2 flex justify-between">
+                <span class="text-gray-500">Historia clínica</span>
+                <span class="font-medium text-right max-w-[28rem]">{{ selected()?.clinicalHistory }}</span>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+              <button type="button" (click)="closeView()" class="px-3 py-2 rounded-md border text-sm">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 
   @if (topOpen()) {
     <div class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
@@ -46,43 +113,98 @@
             <form class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Edad</label>
-                <input type="number" formControlName="age" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <input type="number" inputmode="numeric" min="0" max="100" formControlName="age" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                @if (form.get('age')?.touched && form.get('age')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">
+                    @if (form.get('age')?.errors?.['required']) { <span>La edad es requerida.</span> }
+                    @if (form.get('age')?.errors?.['min']) { <span>La edad no puede ser negativa.</span> }
+                    @if (form.get('age')?.errors?.['max']) { <span>La edad debe ser menor o igual a 100.</span> }
+                  </div>
+                }
+                @if (form.get('careDate')?.touched && form.get('careDate')?.errors?.['minDate']) {
+                  <div class="mt-1 text-xs text-red-600">No se permiten fechas anteriores al dA-a de hoy.</div>
+                }
               </div>
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-900">Estado civil</label>
-                <input type="text" formControlName="maritalStatus" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <label class="block mb-1 text-sm font-medium text-gray-900">Estado Civil</label>
+                <select formControlName="maritalStatus" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                  <option value="" disabled selected>Seleccione...</option>
+                  <option value="Soltero(a)">Soltero(a)</option>
+                  <option value="Casado(a)">Casado(a)</option>
+                  <option value="Viudo(a)">Viudo(a)</option>
+                  <option value="Divorciado(a)">Divorciado(a)</option>
+                </select>
+                @if (form.get('maritalStatus')?.touched && form.get('maritalStatus')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">El estado civil es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Grado de Instrucción</label>
-                <input type="text" formControlName="levelEducation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <select formControlName="levelEducation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                  <option value="" disabled selected>Seleccione...</option>
+                  <option value="Educacion Basica">Educacion Basica</option>
+                  <option value="Educacion Superior">Educacion Superior</option>
+                </select>
+                @if (form.get('levelEducation')?.touched && form.get('levelEducation')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">El grado de instrucción es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Lugar de trabajo</label>
                 <input type="text" formControlName="workPlace" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                @if (form.get('workPlace')?.touched && form.get('workPlace')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">Este campo es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Área</label>
                 <input type="text" formControlName="area" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                @if (form.get('area')?.touched && form.get('area')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">Este campo es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Grupo sanguíneo</label>
-                <input type="text" formControlName="bloodGroup" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <select formControlName="bloodGroup" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                  <option value="" disabled selected>Seleccione...</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+                @if (form.get('bloodGroup')?.touched && form.get('bloodGroup')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">El grupo sanguíneo es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Historia clínica</label>
                 <input formControlName="clinicalHistory" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"/>
+                @if (form.get('clinicalHistory')?.touched && form.get('clinicalHistory')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">Este campo es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Resultado de heces</label>
                 <input type="text" formControlName="resultStool" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                @if (form.get('resultStool')?.touched && form.get('resultStool')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">Este campo es requerido.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Fecha de atención</label>
-                <input type="datetime-local" formControlName="careDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <input type="datetime-local" [min]="minCareDate" formControlName="careDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                @if (form.get('careDate')?.touched && form.get('careDate')?.invalid) {
+                  <div class="mt-1 text-xs text-red-600">La fecha de atención es requerida.</div>
+                }
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900">Fecha de vencimiento</label>
-                <input type="datetime-local" formControlName="expirationDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <input type="datetime-local" formControlName="expirationDate" readonly class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
+                <div class="mt-1 text-xs text-gray-500">Se calcula automáticamente a 1 año de la atención.</div>
               </div>
               <div class="sm:col-span-2 flex items-center justify-end gap-2 pt-2">
                 <button type="button" (click)="closeCreate()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
@@ -95,5 +217,3 @@
     </div>
   }
 </section>
-
-

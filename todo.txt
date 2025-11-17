@@ -1,91 +1,85 @@
-POST {{BASE_URL}}/medical-center/v1/medical-cards
-Description: Create a medical card for current user
-Token: user
-Authorization: Bearer {{USER_TOKEN}}
-Content-Type: application/json
-{
-  "age": "29",
-  "maritalStatus": "single",
-  "levelEducation": "college",
-  "workPlace": "Acme Corp",
-  "area": "IT",
-  "bloodGroup": "O+",
-  "clinicalHistory": "No chronic diseases",
-  "careDate": "2025-10-06T10:00:00.000Z",
-  "expirationDate": "2026-10-06T10:00:00.000Z",
-  "resultStool": "Normal"
-}
-
-GET {{BASE_URL}}/medical-center/v1/medical-cards/me
-Description: List all medical cards owned by current user
-Token: user
-Authorization: Bearer {{USER_TOKEN}}
-
-
-CREATE TABLE medical_card (
-  medical_card_id BIGSERIAL PRIMARY KEY,
-  age             TEXT,
-  marital_status  TEXT,
-  level_education TEXT,
-  work_place      TEXT,
-  area            TEXT,
-  blood_group     VARCHAR(3) CHECK (blood_group IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
-  clinical_history TEXT,
-  care_date       TIMESTAMPTZ,
-  expiration_date TIMESTAMPTZ,
-  p_user_id       BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
-  result_stool    TEXT,
-  status          VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid')),
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-
----
-Form to display in UI:
-
-Edad -> age ->
-Estado Civil -> marital_status
-Grado de Instruccion -> level_education
-Lugar de Trabajo -> work_place
-Area -> area
-Grupo Sanguineo -> blood_group -> options in A+','A-','B+','B-','AB+','AB-','O+','O-'
-Historia Clinica -> clinicalHistory
-Fecha de Atencion -> careDate
-Fecha de vencimiento -> expirationDate
-Resultado Coproparasitologico (Heces) -> resultStool
-
-
----
-
-Example of return after to call API "POST {{BASE_URL}}/medical-center/v1/medical-cards":
+Text to examples to "Inicio" user view:
 
 {
-    "success": true,
-    "data": {
-        "id": 1,
-        "age": "29",
-        "maritalStatus": "single",
-        "levelEducation": "college",
-        "workPlace": "Acme Corp",
-        "area": "IT",
-        "bloodGroup": "O+",
-        "clinicalHistory": "No chronic diseases",
-        "careDate": "2025-10-06T10:00:00.000Z",
-        "expirationDate": "2026-10-06T10:00:00.000Z",
-        "owner": {
-            "id": 6,
-            "dni": "16161616",
-            "email": "testting06@gmail.com",
-            "password": "$2b$10$DD9KV6ye8xXkLecfQINCceBY74iNdQCVVwe0QHpUueT2qMVbjaYla",
-            "role": {
-                "id": 3,
-                "name": "user"
-            },
-            "createdAt": "2025-11-14T02:58:31.640Z"
+  "titulo": "Especialidades y horarios",
+  "secciones": [
+    {
+      "subtitulo": "LABORATORIO CLÍNICO",
+      "campos": [
+        {
+          "nombre": "Entrega y toma de muestras",
+          "descripcion": "Servicio para la recepción y procesamiento de muestras, con un manejo cuidadoso y adecuado para sus análisis."
         },
-        "resultStool": "Normal",
-        "status": "pending",
-        "createdAt": "2025-11-17T04:30:20.851Z"
+        {
+          "nombre": "Horario",
+          "descripcion": "7:45 a.m. A 11:30 a.m."
+        }
+      ]
     },
-    "timestamp": "2025-11-17T04:30:20.858Z"
+    {
+      "subtitulo": "CAJA",
+      "campos": [
+        {
+          "nombre": "Pago de servicios, carnets, certificados, consultas",
+          "descripcion": "Realice sus pagos aqui para trámites de servicios, carnets, certificados y consultas."
+        },
+        {
+          "nombre": "Horario",
+          "descripcion": "7:45 a.m. A 14:30 p.m."
+        }
+      ]
+    },
+    {
+      "subtitulo": "ADMISIÓN Y ENTREGA DE CARNET",
+      "campos": [
+        {
+          "nombre": "Carnet médico",
+          "descripcion": "Nuestro personal le asistirá con los requisitos y el proceso para acceder al servicio."
+        },
+        {
+          "nombre": "Horario",
+          "descripcion": "7:45 a.m. A 15:00 p.m."
+        }
+      ]
+    },
+    {
+      "subtitulo": "CONSULTORIO DE MEDICINA",
+      "campos": [
+        {
+          "nombre": "Consultas médicas, certificados médicos",
+          "descripcion": "Atención para consultas medicas. También sobre certificados médicos."
+        },
+        {
+          "nombre": "Horario",
+          "descripcion": "8:00 a.m. A 16:00 p.m."
+        }
+      ]
+    },
+    {
+      "subtitulo": "CONSULTORIO ODONTOLOGÍA",
+      "campos": [
+        {
+          "nombre": "Curaciones, profilaxis, endodoncia",
+          "descripcion": "Servicios de curaciones, profilaxis hasta tratamientos más complejos como endodoncias."
+        },
+        {
+          "nombre": "Horario",
+          "descripcion": "8:00 a.m. A 15:00 p.m."
+        }
+      ]
+    },
+    {
+      "subtitulo": "SERVICIOS DE ENFERMERÍA",
+      "campos": [
+        {
+          "nombre": "Triaje, toma de presión arterial, curaciones",
+          "descripcion": "El equipo de enfermería hace toma de presión arterial y curaciones."
+        },
+        {
+          "nombre": "Horario",
+          "descripcion": "8:00 a.m. A 15:00 p.m."
+        }
+      ]
+    }
+  ]
 }

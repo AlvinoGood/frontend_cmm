@@ -365,6 +365,20 @@ Description: Download the medical card PDF (owner or admin)
 Token: user (owner) | admin
 Authorization: Bearer {{USER_TOKEN}}
 
+GET {{BASE_URL}}/medical-center/v1/medical-cards/patient/12345678
+Description: List medical cards for a patient by DNI (returns only dni, age, work_place, area)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}} or {{ADMIN_TOKEN}}
+
+PATCH {{BASE_URL}}/medical-center/v1/medical-cards/1/status
+Description: Update medical card status (pending | paid)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}} or {{ADMIN_TOKEN}}
+Content-Type: application/json
+{
+  "status": "paid"
+}
+
 ==========================================================
 Collection: Payments (Tickets)
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { MedicalCardsService } from '../../../core/services/medical-cards.service';
 import { AlertService } from '../../../core/services/alert.service';
 
@@ -20,6 +20,8 @@ export class PatientMedicalCardsComponent implements OnInit {
   topOpen = signal(false);
   loading = signal(true);
   rows = signal<any[]>([]);
+  selected = signal<any | null>(null);
+  minCareDate = '';
 
   form = this.fb.nonNullable.group({
     age: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
@@ -29,13 +31,18 @@ export class PatientMedicalCardsComponent implements OnInit {
     area: ['', [Validators.required]],
     bloodGroup: ['', [Validators.required]],
     clinicalHistory: ['', [Validators.required]],
-    careDate: ['', [Validators.required]],
+    careDate: ['', [Validators.required, minTodayValidator()]],
     expirationDate: ['', [Validators.required]],
     resultStool: ['', [Validators.required]],
   });
 
   ngOnInit(): void {
     this.reload();
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    this.minCareDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
     this.form.get('careDate')?.valueChanges.subscribe((v) => {
       if (!v) return;
       const exp = this.addOneYear(v);
@@ -53,6 +60,14 @@ export class PatientMedicalCardsComponent implements OnInit {
         status: it.status ?? '-',
         ownerDni: it.owner?.dni ?? it.user?.dni ?? '-',
         ownerEmail: it.owner?.email ?? it.user?.email ?? '-',
+        age: it.age ?? it.Age ?? '-',
+        maritalStatus: it.maritalStatus ?? it.marital_status ?? '-',
+        levelEducation: it.levelEducation ?? it.level_education ?? '-',
+        workPlace: it.workPlace ?? it.work_place ?? '-',
+        area: it.area ?? '-',
+        bloodGroup: it.bloodGroup ?? it.blood_group ?? '-',
+        clinicalHistory: it.clinicalHistory ?? it.clinical_history ?? '-',
+        resultStool: it.resultStool ?? it.result_stool ?? '-',
       }));
       this.rows.set(normalized);
       this.loading.set(false);
@@ -61,6 +76,24 @@ export class PatientMedicalCardsComponent implements OnInit {
 
   openCreate() { this.topOpen.set(true); }
   closeCreate() { this.topOpen.set(false); this.form.reset({ age: 0, maritalStatus: '', levelEducation: '', workPlace: '', area: '', bloodGroup: '', clinicalHistory: '', careDate: '', expirationDate: '', resultStool: '' }); }
+  openView(row: any) { this.selected.set(row); }
+  closeView() { this.selected.set(null); }
+
+  isPaid(status: any): boolean {
+    const t = String(status ?? '').toLowerCase();
+    return t === 'paid' || t === 'approved';
+  }
+  isPending(status: any): boolean {
+    const t = String(status ?? '').toLowerCase();
+    return t === 'pending' || t === 'peding';
+  }
+  statusLabel(status: any): string {
+    const t = String(status ?? '').toLowerCase();
+    if (t === 'paid' || t === 'approved') return 'Aprobado';
+    if (t === 'pending' || t === 'peding') return 'Pendiente';
+    if (t === 'expired') return 'Vencido';
+    return status || '-';
+  }
   onSubmit() {
     if (this.form.invalid) return;
     const v = this.form.getRawValue();
@@ -82,4 +115,17 @@ export class PatientMedicalCardsComponent implements OnInit {
     const mm = pad(d.getMinutes());
     return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
   }
+}
+
+
+function minTodayValidator(): ValidatorFn {
+  return (control: AbstractControl) => {
+    const raw = control.value as string;
+    if (!raw) return null; 
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return { minDate: true };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return d.getTime() < today.getTime() ? { minDate: true } : null;
+  };
 }
