@@ -34,5 +34,17 @@ export class UsersService {
   promoteMedical(id: number, medicalRoleId: number) {
     return this.http.patch(`${this.base}/users/${id}/promote-medical`, { medicalRoleId });
   }
-}
 
+  lookupByDni(dni: string) {
+    return this.http.get<any>(`${this.base}/users/lookup/${dni}`).pipe(
+      map((r) => {
+        const data = r?.data ?? {};
+        return {
+          exists: !!data.exists,
+          dni: data.dni ?? null,
+          email: data.email ?? null,
+        } as { exists: boolean; dni: string | null; email: string | null };
+      })
+    );
+  }
+}

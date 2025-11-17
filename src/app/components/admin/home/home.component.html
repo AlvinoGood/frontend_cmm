@@ -45,7 +45,7 @@
 
       <div class="flex flex-col justify-between rounded-xl border bg-white shadow-sm p-4">
         <div class="flex items-center justify-between">
-          <p class="text-sm font-medium text-gray-500">Atenciones</p>
+          <p class="text-sm font-medium text-gray-500">{{ onlyMine() ? 'Mis Atenciones' : 'Atenciones' }}</p>
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
             <i class="fa-solid fa-stethoscope text-sm"></i>
           </span>
@@ -56,4 +56,3 @@
     </div>
   }
 </section>
-

@@ -19,5 +19,18 @@ export class EncountersService {
       })
     );
   }
-}
 
+  create(patientDni: string) {
+    return this.http.post(`${this.base}/encounters`, { patientDni });
+  }
+
+  searchByDni(dni: string) {
+    return this.http.get<any>(`${this.base}/encounters/search/${dni}`).pipe(
+      map((r) => {
+        const items = r?.data?.items ?? r?.items ?? r?.results ?? [];
+        const total = r?.data?.total ?? r?.total ?? items.length;
+        return { items, total } as { items: any[]; total: number };
+      })
+    );
+  }
+}

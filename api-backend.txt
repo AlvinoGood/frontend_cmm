@@ -78,6 +78,11 @@ Description: Get user by id
 Token: admin
 Authorization: Bearer {{ADMIN_TOKEN}}
 
+GET {{BASE_URL}}/medical-center/v1/users/lookup/12345678
+Description: Lookup patient by DNI (returns exists, dni, email)
+Token: admin | medical
+Authorization: Bearer {{ADMIN_TOKEN}} or {{MEDICAL_TOKEN}}
+
 PATCH {{BASE_URL}}/medical-center/v1/users/1
 Description: Update user email and/or password
 Token: admin
