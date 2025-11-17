@@ -1,0 +1,63 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+  @for (s of sections; track s.subtitle) {
+  <article
+    class="relative group overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-primary/40"
+    [ngClass]="s.bgColors">
+    <div
+      class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-contain bg-no-repeat bg-right-bottom opacity-5 pointer-events-none">
+    </div>
+    <div
+      class="pointer-events-none absolute -right-10 -bottom-16 h-32 w-32 rounded-full bg-white/30 blur-2 opacity-80 group-hover:bg-white/50 transition-colors">
+    </div>
+
+    <div class="relative p-5 space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 shadow-sm group-hover:shadow-md transition-all duration-200">
+            <i class="fa-solid text-lg text-primary" [ngClass]="s.icon"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900 tracking-wide">
+              {{ s.subtitle }}
+            </h2>
+            <p class="text-[11px] text-slate-500">
+              Atención segura y oportuna
+            </p>
+          </div>
+        </div>
+
+        <i class="fa-solid fa-circle-info text-slate-400 text-sm group-hover:text-primary/80 transition-colors"></i>
+      </div>
+
+      <div class="space-y-2 text-sm">
+        @for (f of s.fields; track f.name) {
+        <div
+          class="flex gap-3 rounded-xl bg-white/80 border border-white/70 px-3 py-2.5 backdrop-blur-sm transition-colors duration-200 group-hover:border-primary/20">
+          <div class="mt-1">
+            <i class="fa-solid fa-circle text-[6px] text-primary/60"></i>
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-slate-800">{{ f.name }}</div>
+            <div class="text-xs text-slate-600 leading-snug">{{ f.description }}</div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <div class="flex items-center justify-between pt-1">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-medium text-primary/80 shadow-sm">
+          <i class="fa-regular fa-clock text-[11px]"></i>
+          Horario disponible
+        </span>
+        <span
+          class="text-[11px] text-primary/70 hover:text-primary flex items-center gap-1 cursor-pointer transition-colors"
+          (click)="goToServices()">
+          Más información <i class="fa-solid fa-chevron-right text-[9px]"></i>
+        </span>
+      </div>
+    </div>
+  </article>
+  }
+</div>

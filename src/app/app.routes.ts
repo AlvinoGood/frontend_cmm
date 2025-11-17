@@ -39,10 +39,6 @@ export const routes: Routes = [
         canMatch: [isRole('user')],
         loadChildren: () => import('./components/patient/patient.routes').then(m => m.PATIENT_ROUTES),
       },
-      {
-        path: '',
-        loadChildren: () => import('./components/admin/admin.routes').then(m => m.adminRoutes),
-      },
     ],
   },
   { path: '**', redirectTo: 'auth' },

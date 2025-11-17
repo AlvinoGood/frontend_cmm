@@ -1,11 +1,29 @@
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
-  <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
-    <ul class="space-y-1 font-medium text-sm">
-      @for (it of items(); track it.id) {
-        <li>
-          <app-sidebar-item [item]="it" />
-        </li>
-      }
-    </ul>
+<aside id="logo-sidebar"
+  class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 transition-transform -translate-x-full sm:translate-x-0 shadow-sm"
+  aria-label="Sidebar">
+  <div class="h-full px-4 pb-4 overflow-y-auto overflow-x-hidden bg-white w-full">
+    <div class="flex flex-col justify-between h-full w-full">
+      <div class="flex flex-col gap-4">
+        <div class="hidden md:flex items-center justify-center px-1 pb-3 h-40">
+          <img src="images/doctor.png" alt="imagen sidebar" class="w-[80%]" />
+        </div>
+
+        <ul class="space-y-1 font-medium text-sm">
+          @for (it of items(); track it.id) {
+          <li>
+            <app-sidebar-item [item]="it" />
+          </li>
+          }
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-0.5 items-center pb-2 pt-4 mt-4 border-t border-gray-400 text-[11px] text-gray-500">
+        <span class="hidden md:flex items-center justify-center px-1 pb-3 h-40">
+          <img src="images/round_log.png" alt="imagen footer" class="w-[80%]">
+        </span>
+        <span>© 2025 Municipalidad del Cusco</span>
+        <span class="font-semibold tracking-wide">HATUN LLAQTA</span>
+      </div>
+    </div>
   </div>
 </aside>
