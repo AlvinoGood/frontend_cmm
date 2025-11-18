@@ -29,6 +29,19 @@ export class ServicesService {
       );
   }
 
+  mySpecialty(limit = 50, offset = 0) {
+    let params = new HttpParams().set('limit', String(limit)).set('offset', String(offset));
+    return this.http
+      .get<any>(`${this.base}/services/my-specialty`, { params })
+      .pipe(
+        map((r) => {
+          const items = r?.data?.items ?? r?.items ?? r?.results ?? [];
+          const total = r?.data?.total ?? r?.total ?? items.length + offset;
+          return { items, total } as { items: any[]; total: number };
+        })
+      );
+  }
+
   create(body: any) {
     return this.http.post(`${this.base}/services`, body);
   }

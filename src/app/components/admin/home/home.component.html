@@ -1,16 +1,14 @@
 <section class="p-4">
-  <div class="mb-6">
-    <h2 class="text-2xl font-semibold text-gray-900">Panel de resumen</h2>
-    <p class="text-sm text-gray-600 mt-1">Estado general del centro médico</p>
-  </div>
+  <div class="relative overflow-hidden rounded-xl mb-6"><div class="absolute inset-0 bg-[url(''/images/solmuni.png'')] bg-cover bg-center opacity-10"></div><div class="absolute inset-0 bg-gradient-to-br from-white via-white/90 to-white/70"></div><div class="relative px-5 py-6"><h2 class="text-2xl font-semibold text-gray-900">Panel de resumen</h2><p class="text-sm text-gray-600 mt-1">Estado general del centro médico</p></div></div>
 
   @if (loading()) {
     <div class="flex justify-center py-12">
       <div class="h-8 w-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
     </div>
   } @else {
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <div class="flex flex-col justify-between rounded-xl border bg-white shadow-sm p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div class="relative group overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-sky-50 via-white to-sky-100 shadow-sm p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-contain bg-no-repeat bg-right-bottom opacity-5 pointer-events-none"></div>
         <div class="flex items-center justify-between">
           <p class="text-sm font-medium text-gray-500">Usuarios</p>
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -21,7 +19,8 @@
         <p class="mt-1 text-xs text-gray-500">Usuarios registrados en el sistema</p>
       </div>
 
-      <div class="flex flex-col justify-between rounded-xl border bg-white shadow-sm p-4">
+      <div class="relative group overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 shadow-sm p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-contain bg-no-repeat bg-right-bottom opacity-5 pointer-events-none"></div>
         <div class="flex items-center justify-between">
           <p class="text-sm font-medium text-gray-500">Servicios</p>
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -32,7 +31,8 @@
         <p class="mt-1 text-xs text-gray-500">Servicios médicos disponibles</p>
       </div>
 
-      <div class="flex flex-col justify-between rounded-xl border bg-white shadow-sm p-4">
+      <div class="relative group overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-amber-50 via-white to-amber-100 shadow-sm p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-contain bg-no-repeat bg-right-bottom opacity-5 pointer-events-none"></div>
         <div class="flex items-center justify-between">
           <p class="text-sm font-medium text-gray-500">Tickets de pago</p>
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -43,7 +43,8 @@
         <p class="mt-1 text-xs text-gray-500">Pagos registrados (todos los estados)</p>
       </div>
 
-      <div class="flex flex-col justify-between rounded-xl border bg-white shadow-sm p-4">
+      <div class="relative group overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-indigo-50 via-white to-indigo-100 shadow-sm p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div class="absolute inset-0 bg-[url('/images/solmuni.png')] bg-contain bg-no-repeat bg-right-bottom opacity-5 pointer-events-none"></div>
         <div class="flex items-center justify-between">
           <p class="text-sm font-medium text-gray-500">{{ onlyMine() ? 'Mis Atenciones' : 'Atenciones' }}</p>
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">

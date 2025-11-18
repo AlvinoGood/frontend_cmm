@@ -1,85 +1,133 @@
-Text to examples to "Inicio" user view:
+GET http://localhost:3000/medical-center/v1/services/my-specialty?limit=100&offset=0
 
+Return:
 {
-  "titulo": "Especialidades y horarios",
-  "secciones": [
-    {
-      "subtitulo": "LABORATORIO CLÍNICO",
-      "campos": [
-        {
-          "nombre": "Entrega y toma de muestras",
-          "descripcion": "Servicio para la recepción y procesamiento de muestras, con un manejo cuidadoso y adecuado para sus análisis."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "7:45 a.m. A 11:30 a.m."
-        }
-      ]
+    "success": true,
+    "data": {
+        "total": 3,
+        "items": [
+            {
+                "id": 47,
+                "name": "CONSULTA PSICOLOGICA",
+                "code": "PSY-CON-001",
+                "price": "10.00",
+                "medicalRole": {
+                    "id": 3,
+                    "specialtyName": "psychologist",
+                    "createdAt": "2025-10-18T05:20:17.272Z",
+                    "template": {
+                        "id": 2,
+                        "name": "cartilla me-ob-ps",
+                        "filePath": "templates/cartilla-me-ob-ps.pdf",
+                        "originalFileName": "cartilla-me-ob-ps.pdf",
+                        "mimeType": "application/pdf",
+                        "fileSize": null,
+                        "createdAt": "2025-10-18"
+                    }
+                },
+                "createdAt": "2025-10-18T05:21:06.262Z"
+            },
+            ...
+        ]
     },
-    {
-      "subtitulo": "CAJA",
-      "campos": [
-        {
-          "nombre": "Pago de servicios, carnets, certificados, consultas",
-          "descripcion": "Realice sus pagos aqui para trámites de servicios, carnets, certificados y consultas."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "7:45 a.m. A 14:30 p.m."
-        }
-      ]
+    "timestamp": "2025-11-18T03:11:25.400Z"
+}
+
+---
+
+GET http://localhost:3000/medical-center/v1/medical-roles?limit=100&offset=0
+
+Return:
+{
+    "success": true,
+    "data": {
+        "total": 6,
+        "items": [
+            {
+                "id": 1,
+                "specialtyName": "doctor",
+                "createdAt": "2025-10-18T05:20:17.272Z",
+                "template": {
+                    "id": 2,
+                    "name": "cartilla me-ob-ps",
+                    "filePath": "templates/cartilla-me-ob-ps.pdf",
+                    "originalFileName": "cartilla-me-ob-ps.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            },
+            {
+                "id": 2,
+                "specialtyName": "obstetrician",
+                "createdAt": "2025-10-18T05:20:17.272Z",
+                "template": {
+                    "id": 2,
+                    "name": "cartilla me-ob-ps",
+                    "filePath": "templates/cartilla-me-ob-ps.pdf",
+                    "originalFileName": "cartilla-me-ob-ps.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            },
+            {
+                "id": 3,
+                "specialtyName": "psychologist",
+                "createdAt": "2025-10-18T05:20:17.272Z",
+                "template": {
+                    "id": 2,
+                    "name": "cartilla me-ob-ps",
+                    "filePath": "templates/cartilla-me-ob-ps.pdf",
+                    "originalFileName": "cartilla-me-ob-ps.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            },
+            {
+                "id": 4,
+                "specialtyName": "nurse",
+                "createdAt": "2025-10-18T05:20:17.272Z",
+                "template": {
+                    "id": 2,
+                    "name": "cartilla me-ob-ps",
+                    "filePath": "templates/cartilla-me-ob-ps.pdf",
+                    "originalFileName": "cartilla-me-ob-ps.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            },
+            {
+                "id": 5,
+                "specialtyName": "dentist",
+                "createdAt": "2025-10-18T05:20:17.272Z",
+                "template": {
+                    "id": 1,
+                    "name": "cartilla dentista",
+                    "filePath": "templates/cartilla-dentista.pdf",
+                    "originalFileName": "cartilla-dentista.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            },
+            {
+                "id": 6,
+                "specialtyName": "terapeuta",
+                "createdAt": "2025-11-11T04:29:00.414Z",
+                "template": {
+                    "id": 1,
+                    "name": "cartilla dentista",
+                    "filePath": "templates/cartilla-dentista.pdf",
+                    "originalFileName": "cartilla-dentista.pdf",
+                    "mimeType": "application/pdf",
+                    "fileSize": null,
+                    "createdAt": "2025-10-18"
+                }
+            }
+        ]
     },
-    {
-      "subtitulo": "ADMISIÓN Y ENTREGA DE CARNET",
-      "campos": [
-        {
-          "nombre": "Carnet médico",
-          "descripcion": "Nuestro personal le asistirá con los requisitos y el proceso para acceder al servicio."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "7:45 a.m. A 15:00 p.m."
-        }
-      ]
-    },
-    {
-      "subtitulo": "CONSULTORIO DE MEDICINA",
-      "campos": [
-        {
-          "nombre": "Consultas médicas, certificados médicos",
-          "descripcion": "Atención para consultas medicas. También sobre certificados médicos."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "8:00 a.m. A 16:00 p.m."
-        }
-      ]
-    },
-    {
-      "subtitulo": "CONSULTORIO ODONTOLOGÍA",
-      "campos": [
-        {
-          "nombre": "Curaciones, profilaxis, endodoncia",
-          "descripcion": "Servicios de curaciones, profilaxis hasta tratamientos más complejos como endodoncias."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "8:00 a.m. A 15:00 p.m."
-        }
-      ]
-    },
-    {
-      "subtitulo": "SERVICIOS DE ENFERMERÍA",
-      "campos": [
-        {
-          "nombre": "Triaje, toma de presión arterial, curaciones",
-          "descripcion": "El equipo de enfermería hace toma de presión arterial y curaciones."
-        },
-        {
-          "nombre": "Horario",
-          "descripcion": "8:00 a.m. A 15:00 p.m."
-        }
-      ]
-    }
-  ]
+    "timestamp": "2025-11-18T03:11:25.406Z"
 }

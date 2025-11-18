@@ -12,6 +12,8 @@ export const NAV_MEDICAL: NavItem[] = [
   { id: 'encounters', label: 'Atenciones', path: '/app/encounters', icon: 'fa-solid fa-stethoscope', roles: ['medical'] },
   { id: 'services', label: 'Servicios', path: '/app/services', icon: 'fa-solid fa-briefcase-medical', roles: ['medical'] },
   { id: 'payments', label: 'Pagos', path: '/app/payments', icon: 'fa-solid fa-credit-card', roles: ['medical'] },
+  { id: 'medical-record', label: 'Mi Ficha Médica', path: '/app/medical-record', icon: 'fa-solid fa-notes-medical', roles: ['medical'] },
+  { id: 'approve-card', label: 'Aprobar carne Medico', path: '/app/approve-card', icon: 'fa-solid fa-check-to-slot', roles: ['medical'] },
   { id: 'attended', label: 'Pacientes atendidos', path: '/app/attended', icon: 'fa-solid fa-users', roles: ['medical'] },
 ];
 

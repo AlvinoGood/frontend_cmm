@@ -7,6 +7,8 @@ import { AlertService } from '../../../core/services/alert.service';
 import { TemplateCreateModalComponent } from './components/template-create-modal/template-create-modal.component';
 import { TemplateFormModalComponent } from './components/template-form-modal/template-form-modal.component';
 import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
+import { ActivatedRoute } from '@angular/router';
+import { ServicesService } from '../../../core/services/services.service';
 @Component({
   selector: 'app-admin-templates',
   standalone: true,
@@ -19,6 +21,8 @@ import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component
 export class AdminTemplatesComponent implements OnInit {
   private readonly svc = inject(MedicalTemplatesService);
   private readonly alerts = inject(AlertService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly servicesSvc = inject(ServicesService);
 
   headers: DataTableHeader[] = [
     { label: 'Nombre', key: 'name' },
@@ -38,9 +42,17 @@ export class AdminTemplatesComponent implements OnInit {
   editing: any | null = null;
   deleting: any | null = null;
   viewing: any | null = null;
+  canManage = true;
 
   ngOnInit(): void {
-    this.load();
+    const data = this.route.snapshot.data as any;
+    const onlyMine = !!data?.onlyMine;
+    this.canManage = typeof data?.canManage !== 'undefined' ? !!data.canManage : true;
+    if (onlyMine) {
+      this.loadMine();
+    } else {
+      this.load();
+    }
   }
 
   private allItems: any[] = [];
@@ -56,6 +68,29 @@ export class AdminTemplatesComponent implements OnInit {
       this.allItems = normalized;
       this.applyFilterPage();
       this.total.set(normalized.length);
+    });
+  }
+
+  private loadMine(): void {
+    this.svc.list().subscribe((templates) => {
+      this.servicesSvc.mySpecialty(100, 0).subscribe(({ items }) => {
+        const templateIds = new Set<number>();
+        for (const s of items ?? []) {
+          const role: any = (s as any).medicalRole ?? (s as any).medical_role ?? {};
+          const tid = role?.template?.id ?? role?.template_id ?? (s as any).templateId ?? (s as any).template_id;
+          if (typeof tid === 'number') templateIds.add(tid);
+        }
+        const normalized = (templates ?? []).map((t: any) => ({
+          id: t.id ?? t.medical_template_id,
+          name: t.name ?? t.name_template,
+          originalFileName: t.originalFileName ?? t.original_file_name ?? '',
+          filePath: t.filePath ?? t.file_path ?? '',
+        }));
+        const filtered = templateIds.size === 0 ? [] : normalized.filter((t: any) => templateIds.has(t.id));
+        this.allItems = filtered;
+        this.applyFilterPage();
+        this.total.set(filtered.length);
+      });
     });
   }
 
@@ -114,3 +149,5 @@ export class AdminTemplatesComponent implements OnInit {
     this.viewing = row;
   }
 }
+
+

@@ -18,7 +18,11 @@
           </div>
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-900">Archivo (PDF) opcional</label>
-            <input type="file" accept="application/pdf" (change)="onFileChange($event)" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-3 file:rounded file:border-0 file:text-sm file:bg-primary file:text-white hover:file:bg-accent" />
+            <div class="flex items-center gap-3">
+              <input id="template-file-edit" type="file" accept="application/pdf" (change)="onFileChange($event)" class="hidden" />
+              <label for="template-file-edit" class="inline-flex items-center px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm cursor-pointer">Seleccionar archivo</label>
+              <span class="text-sm text-gray-600">{{ file?.name || 'Ningún archivo seleccionado' }}</span>
+            </div>
           </div>
           <div class="flex items-center justify-end gap-2 pt-2">
             <button type="button" (click)="onPreClose($event); cancel.emit()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
@@ -29,4 +33,3 @@
     </div>
   </div>
 </div>
-
