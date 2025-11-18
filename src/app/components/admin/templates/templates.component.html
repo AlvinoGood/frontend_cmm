@@ -1,15 +1,17 @@
 <section class="p-4">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-gray-900">Plantillas</h2>
-    <button type="button" (click)="openCreate()"
-      class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
-      <i class="fa-solid fa-square-plus"></i>
-      Nueva plantilla
-    </button>
+    @if (canManage) {
+      <button type="button" (click)="openCreate()"
+        class="inline-flex items-center gap-2 text-white bg-primary hover:bg-accent hover:text-primary font-medium rounded-md px-3 py-2 text-base">
+        <i class="fa-solid fa-square-plus"></i>
+        Nueva plantilla
+      </button>
+    }
   </div>
 
   <div class="bg-white border rounded-lg p-4">
-    <app-data-table [headers]="headers" [rows]="rows()" [showActions]="true" [total]="total()" [pageIndex]="pageIndex()"
+    <app-data-table [headers]="headers" [rows]="rows()" [showActions]="true" [showEdit]="canManage" [showDelete]="canManage" [total]="total()" [pageIndex]="pageIndex()"
       [pageSize]="pageSize" [searchTerm]="searchTerm()" (searchChange)="onSearchChange($event)"
       (pageChange)="onPageChange($event)" (view)="openView($event)" (edit)="openEdit($event)"
       (delete)="onDelete($event)"></app-data-table>
@@ -17,8 +19,8 @@
 
   <app-pdf-viewer [templateId]="viewing?.id ?? null"></app-pdf-viewer>
 
-  <app-template-create-modal [open]="createOpen()" (cancel)="closeCreate()" (save)="saveCreate($event)" />
-  <app-template-form-modal [open]="editOpen()" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" />
+  @if (canManage && createOpen()) { <app-template-create-modal [open]="true" (cancel)="closeCreate()" (save)="saveCreate($event)" /> }
+  @if (canManage && editOpen()) { <app-template-form-modal [open]="true" [value]="editing" (cancel)="closeEdit()" (save)="saveEdit($event)" /> }
   <app-confirm-modal [open]="deleteOpen()" title="Eliminar plantilla"
     [message]="'¿Eliminar ' + (deleting?.name || '') + ' (' + (deleting?.originalFileName || '') + ')?'"
     (cancel)="closeDelete()" (confirm)="confirmDelete()" />

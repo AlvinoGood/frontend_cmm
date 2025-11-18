@@ -4,6 +4,7 @@ import { AdminPaymentsComponent } from '../admin/payments/payments.component';
 import { AdminConsultationsComponent } from '../admin/consultations/consultations.component';
 import { AdminHomeComponent } from '../admin/home/home.component';
 import { AdminTemplatesComponent } from '../admin/templates/templates.component';
+import { AdminApproveCardComponent } from '../admin/approve-card/approve-card.component';
 
 export const MEDICAL_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -12,5 +13,6 @@ export const MEDICAL_ROUTES: Routes = [
   { path: 'payments', component: AdminPaymentsComponent },
   { path: 'encounters', component: AdminConsultationsComponent, data: { canCreate: true } },
   { path: 'medical-record', component: AdminTemplatesComponent, data: { onlyMine: true, canManage: false } },
+  { path: 'approve-card', component: AdminApproveCardComponent },
   { path: 'attended', component: AdminConsultationsComponent, data: { onlyMine: true } },
 ];

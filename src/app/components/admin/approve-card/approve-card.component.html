@@ -1,0 +1,112 @@
+<section class="p-4">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Aprobar carné médico</h2>
+  </div>
+
+  <div class="bg-white border rounded-lg p-4">
+    <div class="flex items-center justify-between mb-3">
+      <input type="text" [value]="searchTerm()" (input)="onSearchInput($event)"
+             placeholder="Buscar por DNI o fecha de solicitud..."
+             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-72 p-2.5" />
+      <div class="text-sm text-gray-600">Mostrando {{ rows().length }} de {{ total() }}</div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <div class="rounded-md overflow-hidden inline-block min-w-full align-middle">
+        <table class="w-full min-w-[900px]">
+          <thead>
+            <tr>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de solicitud</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Usuario (DNI)</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Estado</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Edad</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Lugar de trabajo</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Area</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de atención</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de vencimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of rows(); track r.id) {
+              <tr [style.backgroundColor]="($index % 2 === 1) ? 'color-mix(in oklab, var(--color-accent) 15%, white)' : null">
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.createdAt }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.userDni }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">
+                  @if (canChangeStatus) {
+                    <button type="button" class="px-2 py-1 rounded border flex items-center gap-2" (click)="openStatus(r)">
+                      @if (r.status === 'pending') {
+                        <span>Pendiente</span>
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                      } @else if (r.status === 'paid') {
+                        <span>Aprovado</span>
+                        <i class="fa-solid fa-circle-check text-green-500"></i>
+                      } @else {
+                        <span class="text-gray-400 text-xs">{{ r.status || '-' }}</span>
+                      }
+                    </button>
+                  } @else {
+                    @if (r.status === 'pending') {
+                      <span class="flex items-center gap-2">
+                        <p>Pendiente</p>
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                      </span>
+                    } @else if (r.status === 'paid') {
+                      <span class="flex items-center gap-2">
+                        <p>Aprovado</p>
+                        <i class="fa-solid fa-circle-check text-green-500"></i>
+                      </span>
+                    } @else {
+                      <span class="text-gray-400 text-xs">{{ r.status || '-' }}</span>
+                    }
+                  }
+                </td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.age }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.workPlace }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.area }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.careDate }}</td>
+                <td class="text-sm text-gray-900 whitespace-nowrap py-2 px-2">{{ r.expirationDate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-3 flex items-center justify-between">
+      <button type="button" (click)="prevPage()" [disabled]="pageIndex() === 0" [class.opacity-50]="pageIndex() === 0" class="px-3 py-2 rounded border text-base">Anterior</button>
+      <div class="text-sm text-gray-600">Pagina {{ pageIndex() + 1 }}</div>
+      <button type="button" (click)="nextPage()" [disabled]="(pageIndex() + 1) * pageSize >= total()" [class.opacity-50]="(pageIndex() + 1) * pageSize >= total()" class="px-3 py-2 rounded border text-base">Siguiente</button>
+    </div>
+  </div>
+
+  <div [class.hidden]="!statusOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-sm max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Cambiar estado</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeStatus()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 space-y-3">
+          <label class="block mb-1 text-sm font-medium text-gray-900">Estado</label>
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" [value]="selectedStatus" (change)="onStatusSelect($event)">
+            <option value="pending">Pendiente</option>
+            <option value="paid">Aprovado</option>
+          </select>
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" (click)="closeStatus()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="button" (click)="openFinalConfirm()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-confirm-modal [open]="confirmOpen()" title="Confirmar cambio de estado"
+    [message]="'¿Cambiar estado a ' + (selectedStatus === 'paid' ? 'Aprovado' : 'Pendiente') + '?'"
+    (cancel)="closeFinalConfirm()" (confirm)="doConfirmStatus()" />
+</section>

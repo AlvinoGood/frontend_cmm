@@ -1,133 +1,67 @@
-GET http://localhost:3000/medical-center/v1/services/my-specialty?limit=100&offset=0
+GET {{BASE_URL}}/medical-center/v1/medical-cards
+Description: List all medical cards (returns age, work_place, area, p_user_id (DNI), status, care_date, expiration_date, created_at)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}} or {{ADMIN_TOKEN}}
 
-Return:
+PATCH {{BASE_URL}}/medical-center/v1/medical-cards/1/status
+Description: Update medical card status (pending | paid)
+Token: medical | admin
+Authorization: Bearer {{MEDICAL_TOKEN}} or {{ADMIN_TOKEN}}
+Content-Type: application/json
 {
-    "success": true,
-    "data": {
-        "total": 3,
-        "items": [
-            {
-                "id": 47,
-                "name": "CONSULTA PSICOLOGICA",
-                "code": "PSY-CON-001",
-                "price": "10.00",
-                "medicalRole": {
-                    "id": 3,
-                    "specialtyName": "psychologist",
-                    "createdAt": "2025-10-18T05:20:17.272Z",
-                    "template": {
-                        "id": 2,
-                        "name": "cartilla me-ob-ps",
-                        "filePath": "templates/cartilla-me-ob-ps.pdf",
-                        "originalFileName": "cartilla-me-ob-ps.pdf",
-                        "mimeType": "application/pdf",
-                        "fileSize": null,
-                        "createdAt": "2025-10-18"
-                    }
-                },
-                "createdAt": "2025-10-18T05:21:06.262Z"
-            },
-            ...
-        ]
-    },
-    "timestamp": "2025-11-18T03:11:25.400Z"
+  "status": "paid"
 }
 
+CREATE TABLE medical_card (
+  medical_card_id BIGSERIAL PRIMARY KEY,
+  age             TEXT,
+  marital_status  TEXT,
+  level_education TEXT,
+  work_place      TEXT,
+  area            TEXT,
+  blood_group     VARCHAR(3) CHECK (blood_group IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
+  clinical_history TEXT,
+  care_date       TIMESTAMPTZ,
+  expiration_date TIMESTAMPTZ,
+  p_user_id       BIGINT NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  result_stool    TEXT,
+  status          VARCHAR(10) NOT NULL CHECK (status IN ('pending','paid')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX medical_card_user_idx   ON medical_card(p_user_id);
+CREATE INDEX medical_card_status_idx ON medical_card(status);
+
+
 ---
+Example of return after to call API "GET {{BASE_URL}}/medical-center/v1/medical-cards":
 
-GET http://localhost:3000/medical-center/v1/medical-roles?limit=100&offset=0
-
-Return:
 {
     "success": true,
     "data": {
-        "total": 6,
+        "total": 2,
         "items": [
             {
-                "id": 1,
-                "specialtyName": "doctor",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 2,
-                    "name": "cartilla me-ob-ps",
-                    "filePath": "templates/cartilla-me-ob-ps.pdf",
-                    "originalFileName": "cartilla-me-ob-ps.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
+                "age": "45",
+                "work_place": "Flores",
+                "area": "Av. Rosales",
+                "p_user_id": "16161616",
+                "status": "paid",
+                "care_date": "2025-11-20T05:15:00.000Z",
+                "expiration_date": "2026-11-20T05:15:00.000Z",
+                "created_at": "2025-11-17T05:16:48.631Z"
             },
             {
-                "id": 2,
-                "specialtyName": "obstetrician",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 2,
-                    "name": "cartilla me-ob-ps",
-                    "filePath": "templates/cartilla-me-ob-ps.pdf",
-                    "originalFileName": "cartilla-me-ob-ps.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
-            },
-            {
-                "id": 3,
-                "specialtyName": "psychologist",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 2,
-                    "name": "cartilla me-ob-ps",
-                    "filePath": "templates/cartilla-me-ob-ps.pdf",
-                    "originalFileName": "cartilla-me-ob-ps.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
-            },
-            {
-                "id": 4,
-                "specialtyName": "nurse",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 2,
-                    "name": "cartilla me-ob-ps",
-                    "filePath": "templates/cartilla-me-ob-ps.pdf",
-                    "originalFileName": "cartilla-me-ob-ps.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
-            },
-            {
-                "id": 5,
-                "specialtyName": "dentist",
-                "createdAt": "2025-10-18T05:20:17.272Z",
-                "template": {
-                    "id": 1,
-                    "name": "cartilla dentista",
-                    "filePath": "templates/cartilla-dentista.pdf",
-                    "originalFileName": "cartilla-dentista.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
-            },
-            {
-                "id": 6,
-                "specialtyName": "terapeuta",
-                "createdAt": "2025-11-11T04:29:00.414Z",
-                "template": {
-                    "id": 1,
-                    "name": "cartilla dentista",
-                    "filePath": "templates/cartilla-dentista.pdf",
-                    "originalFileName": "cartilla-dentista.pdf",
-                    "mimeType": "application/pdf",
-                    "fileSize": null,
-                    "createdAt": "2025-10-18"
-                }
+                "age": "29",
+                "work_place": "Acme Corp",
+                "area": "IT",
+                "p_user_id": "16161616",
+                "status": "pending",
+                "care_date": "2025-10-06T10:00:00.000Z",
+                "expiration_date": "2026-10-06T10:00:00.000Z",
+                "created_at": "2025-11-17T04:30:20.851Z"
             }
         ]
     },
-    "timestamp": "2025-11-18T03:11:25.406Z"
+    "timestamp": "2025-11-18T04:37:38.521Z"
 }

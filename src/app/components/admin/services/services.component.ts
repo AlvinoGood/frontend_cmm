@@ -8,6 +8,7 @@ import { ServiceFormModalComponent, ServiceFormValue } from './components/servic
 import { ServiceCreateModalComponent, ServiceCreateValue } from './components/service-create-modal/service-create-modal.component';
 import { AlertService } from '../../../core/services/alert.service';
 import { PaymentsService } from '../../../core/services/payments.service';
+import { Router } from '@angular/router';
 import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-modal/confirm-modal.component';
 
 @Component({
@@ -23,6 +24,7 @@ export class AdminServicesComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
   private readonly payments = inject(PaymentsService);
+  private readonly router = inject(Router);
 
   headers: DataTableHeader[] = [
     { label: 'Nombre', key: 'name' },
@@ -185,4 +187,5 @@ export class AdminServicesComponent implements OnInit {
     });
   }
   closeBuyInfo() { this.buyInfoOpen.set(false); }
+  goToPayments() { this.closeBuyInfo(); this.router.navigateByUrl('/app/payments'); }
 }

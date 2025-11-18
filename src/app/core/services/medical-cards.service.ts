@@ -8,6 +8,17 @@ export class MedicalCardsService {
   private readonly http = inject(HttpClient);
   private get base() { return environment.apiUrl; }
 
+  list(limit = 100, offset = 0) {
+    const params: any = { limit, offset } as any;
+    return this.http.get<any>(`${this.base}/medical-cards`, { params }).pipe(
+      map((r) => {
+        const items = r?.data?.items ?? r?.items ?? r?.results ?? [];
+        const total = r?.data?.total ?? r?.total ?? items.length;
+        return { items, total } as { items: any[]; total: number };
+      })
+    );
+  }
+
   listMine() {
     return this.http.get<any>(`${this.base}/medical-cards/me`).pipe(
       map((r) => {
@@ -21,5 +32,8 @@ export class MedicalCardsService {
   create(body: any) {
     return this.http.post(`${this.base}/medical-cards`, body);
   }
-}
 
+  updateStatus(id: number, status: 'pending' | 'paid') {
+    return this.http.patch(`${this.base}/medical-cards/${id}/status`, { status });
+  }
+}
