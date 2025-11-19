@@ -6,3 +6,4 @@ export const environment = {
     //apiUrl: 'https://api-convenciones.cusco.gob.pe/center-medical/v1',
     apiUrl: 'http://localhost:3000/medical-center/v1'
 };
+
