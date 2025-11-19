@@ -2,6 +2,12 @@
   <div class="w-full max-w-sm p-6 bg-white border border-primary rounded-lg shadow-sm">
     <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
       <div class="text-center">
+        <h5 class="text-xl font-semibold text-gray-900">Centro Médico Municipal</h5>
+      </div>
+      <div class="w-full flex items-center justify-center my-4">
+        <img src="images/doctor.png" alt="logo doctor" class="w-[60%]">
+      </div>
+      <div class="text-center">
         <h5 class="text-xl font-semibold text-gray-900">Recuperar contraseña</h5>
       </div>
       <div>
@@ -9,7 +15,14 @@
         <input formControlName="email" id="email" type="email" placeholder="name@example.com" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5" />
       </div>
       <button type="submit" [disabled]="submitting || form.invalid" class="w-full text-white bg-primary hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus:ring-4 focus:outline-none focus:ring-primary font-medium rounded-lg text-sm px-5 py-2.5">
-        Enviar enlace
+        @if (submitting) {
+          <span class="inline-flex items-center justify-center gap-2">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Enviando...</span>
+          </span>
+        } @else {
+          Enviar enlace
+        }
       </button>
       <div class="text-sm text-gray-500 text-center">
         <a routerLink="/auth/login" class="text-primary hover:underline">Volver al login</a>
@@ -17,3 +30,26 @@
     </form>
   </div>
 </section>
+
+<div [class.hidden]="!errorOpen" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+  <div class="relative w-full max-w-sm max-h-full">
+    <div class="relative bg-white rounded-lg shadow border text-sm">
+      <div class="flex items-center justify-between p-4 border-b rounded-t">
+        <h3 class="text-base font-semibold text-gray-900">Aviso</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" (click)="onErrorClose()">
+          <span class="sr-only">Cerrar</span>
+          <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 text-sm">
+        <p>Ocurrió un error, inténtalo más tarde.</p>
+        <div class="flex items-center justify-end gap-2 pt-4">
+          <button type="button" (click)="onErrorClose()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>

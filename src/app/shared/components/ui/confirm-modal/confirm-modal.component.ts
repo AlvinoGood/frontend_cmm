@@ -29,3 +29,4 @@ export class ConfirmModalComponent {
     this.confirm.emit();
   }
 }
+

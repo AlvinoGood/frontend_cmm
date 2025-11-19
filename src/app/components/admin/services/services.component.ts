@@ -52,6 +52,7 @@ export class AdminServicesComponent implements OnInit {
   canBuy: boolean = false;
   buyOpen = signal(false);
   buyInfoOpen = signal(false);
+  confirmingBuy = signal(false);
   buying: any | null = null;
   userDni: string | null = null;
   userEmail: string | null = null;
@@ -181,10 +182,11 @@ export class AdminServicesComponent implements OnInit {
   closeBuy() { this.buyOpen.set(false); this.buying = null; }
   confirmBuy() {
     if (!this.buying?.id) return;
+    this.confirmingBuy.set(true);
     this.payments.createTicket(this.buying.id).subscribe({
-      next: () => { this.closeBuy(); this.buyInfoOpen.set(true); },
+      next: () => { this.alerts.success('Solicitud registrada'); this.closeBuy(); this.buyInfoOpen.set(true); },
       error: () => this.alerts.error('No se pudo crear el ticket'),
-    });
+    }).add(() => this.confirmingBuy.set(false));
   }
   closeBuyInfo() { this.buyInfoOpen.set(false); }
   goToPayments() { this.closeBuyInfo(); this.router.navigateByUrl('/app/payments'); }

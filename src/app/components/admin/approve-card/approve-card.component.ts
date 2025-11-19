@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { MedicalCardsService } from '../../../core/services/medical-cards.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-modal/confirm-modal.component';
+import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-admin-approve-card',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent],
+  imports: [CommonModule],
   templateUrl: './approve-card.component.html',
   styleUrl: './approve-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +15,7 @@ import { ConfirmModalComponent } from '../../../shared/components/ui/confirm-mod
 export class AdminApproveCardComponent implements OnInit {
   private readonly svc = inject(MedicalCardsService);
   private readonly auth = inject(AuthService);
+  private readonly alerts = inject(AlertService);
 
   rows = signal<any[]>([]);
   total = signal(0);
@@ -27,6 +28,7 @@ export class AdminApproveCardComponent implements OnInit {
   selectedStatus: 'pending' | 'paid' = 'pending';
   canChangeStatus = false;
   confirmOpen = signal(false);
+  confirming = signal(false);
 
   private items: any[] = [];
   private searchTimer: any;
@@ -111,17 +113,20 @@ export class AdminApproveCardComponent implements OnInit {
   closeFinalConfirm() { this.confirmOpen.set(false); }
   doConfirmStatus() {
     if (!this.selectedId) return;
+    this.confirming.set(true);
     this.svc.updateStatus(this.selectedId, this.selectedStatus).subscribe({
       next: () => {
         this.items = this.items.map((it) => it.id === this.selectedId ? { ...it, status: this.selectedStatus } : it);
         this.applyFilterPage();
+        this.alerts.success('Estado actualizado');
         this.closeFinalConfirm();
         this.closeStatus();
       },
       error: () => {
+        this.alerts.error('No se pudo actualizar');
         this.closeFinalConfirm();
         this.closeStatus();
       }
-    });
+    }).add(() => this.confirming.set(false));
   }
 }

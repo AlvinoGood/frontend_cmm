@@ -1,6 +1,6 @@
 <section class="p-4">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-semibold text-gray-900">Aprobar carné médico</h2>
+    <h2 class="text-lg font-semibold text-gray-900">Aprobar Carne Médico</h2>
   </div>
 
   <div class="bg-white border rounded-lg p-4">
@@ -22,7 +22,7 @@
               <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Edad</th>
               <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Lugar de trabajo</th>
               <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Area</th>
-              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de atención</th>
+              <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de atencion</th>
               <th class="text-left py-2 px-2 text-sm font-semibold text-gray-700">Fecha de vencimiento</th>
             </tr>
           </thead>
@@ -106,7 +106,37 @@
     </div>
   </div>
 
-  <app-confirm-modal [open]="confirmOpen()" title="Confirmar cambio de estado"
-    [message]="'¿Cambiar estado a ' + (selectedStatus === 'paid' ? 'Aprovado' : 'Pendiente') + '?'"
-    (cancel)="closeFinalConfirm()" (confirm)="doConfirmStatus()" />
+
+  <div [class.hidden]="!confirmOpen()" class="fixed inset-0 z-[1100] w-full p-4 overflow-y-auto flex items-center justify-center">
+    <div class="relative w-full max-w-sm max-h-full">
+      <div class="relative bg-white rounded-lg shadow border text-sm">
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+          <h3 class="text-base font-semibold text-gray-900">Confirmar cambio de estado</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600" (click)="closeFinalConfirm()">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 text-sm">
+          <p>¿Cambiar estado a {{ selectedStatus === 'paid' ? 'Aprovado' : 'Pendiente' }}?</p>
+          <div class="flex items-center justify-end gap-2 pt-4">
+            <button type="button" (click)="closeFinalConfirm()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
+            <button type="button" (click)="doConfirmStatus()" [disabled]="confirming()" class="px-3 py-2 rounded-md text-white bg-primary disabled:opacity-60 disabled:cursor-not-allowed hover:bg-accent hover:text-primary text-sm">
+              @if (confirming()) {
+                <span class="inline-flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <span>Guardando...</span>
+                </span>
+              } @else {
+                Confirmar
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+

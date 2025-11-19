@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PaymentsService } from '../../../core/services/payments.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-admin-payments',
@@ -16,6 +17,7 @@ export class AdminPaymentsComponent implements OnInit {
   private readonly svc = inject(PaymentsService);
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly alerts = inject(AlertService);
 
   rows = signal<any[]>([]);
   total = signal(0);
@@ -31,6 +33,7 @@ export class AdminPaymentsComponent implements OnInit {
   canChangeStatus = false;
   onlyMine = false;
   userDni: string | null = null;
+  confirming = signal(false);
 
   private items: any[] = [];
   private searchTimer: any;
@@ -127,15 +130,18 @@ export class AdminPaymentsComponent implements OnInit {
 
   confirmStatus() {
     if (!this.selectedTicketId) return;
+    this.confirming.set(true);
     this.svc.updateTicketStatus(this.selectedTicketId, this.selectedStatus).subscribe({
       next: () => {
         this.items = this.items.map((it) => it.id === this.selectedTicketId ? { ...it, status: this.selectedStatus } : it);
         this.applyFilterPage();
+        this.alerts.success('Estado actualizado');
         this.closeStatus();
       },
       error: () => {
+        this.alerts.error('No se pudo actualizar');
         this.closeStatus();
       }
-    });
+    }).add(() => this.confirming.set(false));
   }
 }

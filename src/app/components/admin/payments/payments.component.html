@@ -136,12 +136,20 @@
           </select>
           <div class="flex items-center justify-end gap-2 pt-2">
             <button type="button" (click)="closeStatus()" class="px-3 py-2 rounded-md border text-sm">Cancelar</button>
-            <button type="button" (click)="confirmStatus()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm">Confirmar</button>
+            <button type="button" (click)="confirmStatus()" [disabled]="confirming()" class="px-3 py-2 rounded-md text-white bg-primary hover:bg-accent hover:text-primary text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+              @if (confirming()) {
+                <span class="inline-flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <span>Guardando...</span>
+                </span>
+              } @else {
+                Confirmar
+              }
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 

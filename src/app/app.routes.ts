@@ -1,4 +1,5 @@
 import { Routes, CanMatchFn } from '@angular/router';
+import { ResetComponent } from './components/auth/reset/reset.component';
 import { inject } from '@angular/core';
 import { jwtAuthGuard } from './core/guards/jwt-auth.guard';
 import { AuthService } from './core/services/auth.service';
@@ -12,6 +13,8 @@ const isRole = (expected: 'admin' | 'medical' | 'user'): CanMatchFn => () => {
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth' },
+
+  { path: 'reset-password', component: ResetComponent },
   {
     path: 'auth',
     loadChildren: () => import('./components/auth/auth.routes').then((m) => m.authRoutes),
